@@ -1,0 +1,69 @@
+\documentclass[11pt,onecolumn,notitlepage]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{appendix}
+\usepackage[numbib]{tocbibind}
+\usepackage{paralist}
+
+\pagestyle{empty}
+\begin{document}
+
+\title{Testing Java with Contracts from Verified Dafny Models}
+\author{PI: Eric Mercer, Associate Professor, Computer Science, Brigham Young University}
+\maketitle
+
+\begin{abstract}
+  Write the abstract.
+\end{abstract}
+
+\providecommand{\keywords}[1]{\noindent\textbf{Keywords -- } \textit{#1}}
+\keywords{Dafny}
+
+\section*{Introduction}
+The goal is to automate the process of using Dafny to test and verify Java implementations.  Dafny provides a contract language to hierarchically prove program properties using weakest pre-condition calculus. It proves if assertions hold under all program inputs that meet pre-conditions. Java is the common deployment language for cloud services but does not have tool support for hierarchical reasoning with contracts. Amazon is currently creating Dafny models from existing services in Java, proving properties of the models while possibly adding new functionality, and then creating Java implementations from the models to field.  Missing is a process to validate the Dafny model created from the Java implementation and a process to validate the Java implementation created from the Dafny model. 
+ 
+The two models should be proved equivalent at some point for high assurance. That is a long term goal that could be accomplished in a variety of ways. The work here is a first step using automatic test generation to synchronizing the Dafny model and the Java implementation. 
+
+Research significance and prior work \cite{8972014}.
+
+\section*{Methods}
+
+\noindent\textbf{Phase 1}: validate a Dafny model that was created from some existing Java implementation
+
+The Dafny model includes contracts on methods and the ability to prove assertions. It is very hard to know if the contracts are strong enough to prove meaningful assertions. The work is to generate Dafny programs from the existing JUnit tests in the Java implementation to eee if the contracts in the Dafny model are strong enough to prove the assertions on the test outcomes. If Dafny fails to prove a test outcome, then the contracts need to be strengthened in the Dafny model. 
+
+It may be possible to use a failed assertion to automatically strengthen a contract using an interplant similar to CEGAR refinement. That is an open question that could be explored.
+
+\noindent\textbf{Phase 2}: validate a Java implementation created from a Dafny model
+
+Dafny models provide some assurance of correctness. Dafny uses the contracts to prove assertions about program tests. It also uses the body of a method to prove the method implements the contract (or at least the body of the method is sufficient enough for the pre-condition to imply the post-condition after flowing the post-condition through the method body with weakest pre-condition calculus). Developers are able to revise the Dafny model to add functionality and prove properties of the new functionality while preserving properties of existing functionality. At some point, the developer automatically, or manually, generates a Java implementation for he model that is sufficient to field in a test deployment. 
+
+The work is to generate a test suite from the Java implementation that gives object-level branch coverage (byte-code branch coverage) of the implementation. The Dayny contracts are used as function summaries to bypass call-sites in generating tests. The post-conditions serve as oracles for the generated tests. The pre-conditions constrain the input space for test generation. A blame for defect isolation is resolved by rerunning the test in the Dafny model: ether the contracts are not sufficient to conclude the test, or they are and therefore there is a defect in the Java implementation.
+
+\begin{compactitem}
+  \item Constrain symbolic execution for a method in Java with the weakest pre-condition on the contract in Dafny <— how should quantifiers be handled?
+  \item Replace method call sites in Java with the contracts from Dafny (these are the method summaries) <— a method call is an uninterpreted function. The pre-condition is an assert in the symbolic execution. The post-condition is a constraint on the path.
+  \item Use symbolic execution to generate tests for object level branch coverage (byte-code branch coverage) <— for field references, do not use general symbolic execution; rather, treat each field reference as as symbolic variable in the path constraint. 
+  \item Instantiate objects with mocks with the needed defined functionality according to the solution from the SMT solver <— these objects and field values may not be exist in the “real” program (sound?)
+  \item Run all tests with JUnit, Mockito, and Maven
+  \item Use the contract post-condition as the oracle <— how would this be accomplished? Would need to turn the contract into Java is some way. Right?
+  \item Define a metric for “contract coverage” and use the tests to better understand the contract <— hard to do if the contract is too we
+\end{compactitem}
+
+Proof of concept system: Traverse the Eclipse DOM to construct the CFG for the method under test. Traverse the CFG to generate candidate paths for test generation. Each path is a sequential program with no branching. Symbolic execute the sequential program to generate the SMT problem thot will find the primary inputs. All method call sites generate a test to violate the pre-condition if possible. The post-condition is added to the path-constraint after the call.
+
+\section*{Expected Results}
+Please include milestones with timeline estimates, such as for datasets, code releases, technical reports, publications, applications, presentations, etc. 
+
+\section*{Funds Needed}
+
+\appendix
+\appendixpage
+
+\bibliographystyle{plain}
+\bibliography{proposal.bib}
+
+\section{CV of PI}
+
+\section{Previously Funded Project Summary}
+Nothing to report.
+\end{document}
