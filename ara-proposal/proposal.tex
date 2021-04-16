@@ -27,6 +27,8 @@ Proving that compilation exactly preserves the meaning of the original Dafny pro
 
 As an aside, there is nothing particular in the Dafny language relative to \texttt{C\#} aside from it being developed by Microsoft Research. Indeed, the language is as suited to compilation to \texttt{Java} as it is to \texttt{C\#}. If a \texttt{Java} backend existed for the Dafny compiler, then Dafny is equally useful for generating \texttt{Java} as it is for \texttt{C\#}. There is current work in Amazon to create such a compiler. As such, this proposal targets \texttt{Java} tests.
 
+\subsection*{Related Work}
+
 Many different tools and languages integrate contract programming in different ways (e.g., Python, Typescript, Java, C/C++, Rust, Eiffel, Go, AGREE, etc.). Contracts can be higher-order or first-order depending on the language. Contracts are often used as programming annotations to improve readability of the code and enhance maintainability (e.g. Racket). This role is especially valuable in untyped script languages where making sense of expected types can be challenging if not the original author (e.g. Python, Javascript, Typescript, Perl). 
 
 Contracts form the basis of runtime monitors to check pre-conditions and assert post-conditions. Monitors can be removed by proving an implementations adheres to its contract. Such proofs can be accomplished with static program analysis (abstract interpretation or type systems), model checking (k-induction in Lustre/AGREE), or constructive reasoning (weakest pre-condition or strongest post-condition calculus). Counter-examples from failed proofs often are some of the very best tests (e.g., generating tests from counter-examples).
