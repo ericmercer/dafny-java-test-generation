@@ -1,12 +1,11 @@
 class T {
   var f : int;
 
-  function method isF(f : int) : bool
+  predicate method isF(f : int)
   reads `f
   {
     (f == this.f)
   }
-
 }
 
 class I {
@@ -24,6 +23,43 @@ class I {
     if (!a) {
       s := true;
     }
+  }
+
+  method oTruePath(t : T, f : int)
+  requires !s && !a
+  ensures (s == t.isF(f)) && (a == !s) 
+  modifies `s, `a
+  {
+    // Table 0 -- "old"
+    // s: s_0
+    // a: a_0
+    // t: t_0
+    // f: f_0
+    // t.isF(f): t.isF_0 (depends on t_0 and f_0)
+
+    // pc: !s_0 /\ !a_0
+
+    var isF := t.isF(f);
+    // isF: t.isF_0
+
+    a := !isF;
+    // a: !(t.isF_0)
+
+    assume(!a);
+    // pc: !s_0 /\ !a_0 /\ t.isF_0
+
+    s := true;
+    // s: true
+  }
+  
+  method oFalsePath(t : T, f : int)
+  requires !s && !a
+  ensures (s == t.isF(f)) && (a == !s) 
+  modifies `s, `a
+  {
+    var isF := t.isF(f);
+    a := !isF;
+    assume(a);
   }
 }
 
@@ -52,12 +88,13 @@ class I_truePath {
     // a: !(t.isF_0)
 
     assume(!a);
-    // pc: !s_0 /\ !a_0 /\ !(t.isF_0)
+    // pc: !s_0 /\ !a_0 /\ t.isF_0
 
     s := true;
     // s: true
 
   }
+
 }
 
 // SAT(pc): s = false, a = false, t.isF(f) = true
