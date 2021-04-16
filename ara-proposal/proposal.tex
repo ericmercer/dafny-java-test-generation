@@ -7,7 +7,7 @@
 \pagestyle{empty}
 \begin{document}
 
-\title{Testing Java with Contracts from Verified Dafny Models}
+\title{Symbolic Execution for Generating Java Tests from Dafny Models}
 \author{PI: Eric Mercer, Associate Professor, Computer Science, Brigham Young University}
 \maketitle
 
@@ -19,9 +19,21 @@
 \keywords{Dafny}
 
 \section*{Introduction}
-The goal is to automate the process of using Dafny to test and verify Java implementations.  Dafny provides a contract language to hierarchically prove program properties using weakest pre-condition calculus. It proves if assertions hold under all program inputs that meet pre-conditions. Java is the common deployment language for cloud services but does not have tool support for hierarchical reasoning with contracts. Amazon is currently creating Dafny models from existing services in Java, proving properties of the models while possibly adding new functionality, and then creating Java implementations from the models to field.  Missing is a process to validate the Dafny model created from the Java implementation and a process to validate the Java implementation created from the Dafny model. 
- 
-The two models should be proved equivalent at some point for high assurance. That is a long term goal that could be accomplished in a variety of ways. The work here is a first step using automatic test generation to synchronizing the Dafny model and the Java implementation. 
+\emph{Contract programming} prescribes that designers write a precise interface specification for software components that can be used to reason about implementations. A \emph{contract} is a declarative specification of what the software component computes and under what conditions that computation is correct. It defines required \emph{pre-conditions} for a component's state and input at invocation, and it defines the guaranteed \emph{post-conditions} of the component's state and outputs after invocation. Contract programming reduces defects and increases reliability by giving pause to the designer to think critically about, and state formally, the intent of each software component in context of the system and by providing early in the design process a robust foundation on which to build test, debug, and automated reasoning. 
+
+\emph{Dafny} is an expressive programming language for the static verification of programs. It is a sequential imperative object oriented language with support for generics, inductive data-types, co-inductive data-types, and most importantly, constructs for formal specification. These constructs include contracts, \emph{frames} to define read and write sets, loop-invariants, and \emph{decreases} clauses for termination. The Dafny verifier implements a \emph{weakest pre-condition} calculus to statically prove a Dafny program terminates and adheres to its specification. The Dafny compiler renders a Dafny program to \texttt{C\#} that can be compiled for the .NET platform. Please note that the final executable may not be suitable for high assurance applications as there is no formal guarantee that the meaning of the original Dafny program is preserved through compilation. As such, deploying such a program in a high assurance application merits some further assurance that that the program still conforms to its Dafny specification.  
+
+Proving that compilation exactly preserves the meaning of the original Dafny program, while an interesting super hard problem, is unlikely to be feasible in the near term (see CakeML as an example). A commonly acceptable alternative is to test to some predefined standard suitable to high assurance systems. This proposal is to automatically generate tests from a Dafny program sufficient to give \emph{object-level branch coverage} and \emph{specification coverage}. Object-level branch coverage is a common \emph{white-box} criteria that means that at the compiled object code level, every branch outcome is exercised by at least one test (note that it is possible to further strengthen the test suite to meet \emph{Modified Condition/Decision Coverage} if desired (see Rungta and Whalen)). It is stronger than \emph{statement coverage} and \emph{branch coverage}, so a test suite that meets object-level branch coverage also meets those standards. Specification coverage is a \emph{black-box} criteria based on \emph{input partitioning} where there is a negative test for each pre-condition and a positive test for each post-condition in the specification. These two test suites provide some assurance that the compiled Dafny program implements its specification.
+
+As an aside, there is nothing particular in the Dafny language relative to \texttt{C\#} aside from it being developed by Microsoft Research. Indeed, the language is as suited to compilation to \texttt{Java} as it is to \texttt{C\#}. If a \texttt{Java} backend existed for the Dafny compiler, then Dafny is equally useful for generating \texttt{Java} as it is for \texttt{C\#}. There is current work in Amazon to create such a compiler. As such, this proposal targets \texttt{Java} tests.
+
+Many different tools and languages integrate contract programming in different ways (e.g., Python, Typescript, Java, C/C++, Rust, Eiffel, Go, AGREE, etc.). Contracts can be higher-order or first-order depending on the language. Contracts are often used as programming annotations to improve readability of the code and enhance maintainability (e.g. Racket). This role is especially valuable in untyped script languages where making sense of expected types can be challenging if not the original author (e.g. Python, Javascript, Typescript, Perl). 
+
+Contracts form the basis of runtime monitors to check pre-conditions and assert post-conditions. Monitors can be removed by proving an implementations adheres to its contract. Such proofs can be accomplished with static program analysis (abstract interpretation or type systems), model checking (k-induction in Lustre/AGREE), or constructive reasoning (weakest pre-condition or strongest post-condition calculus). Counter-examples from failed proofs often are some of the very best tests (e.g., generating tests from counter-examples).
+
+Contracts are equally useful for automated testing. A post-condition is a pre-defined, and convenient, test oracle. The pre-condition is an equally convenient, and useful, input constraint for property based testing and fuzz testing. The contracts can even be employed in mutation analysis to generate tests to show the refinement relation between the contract and the implementing code. 
+
+There are few example of fully verified compilers. A notable example is perhaps in the SeL4 operating system and the CakeML framework. These are fully verified in HOL4. CakeML carries a proof certificate that guarantees the meaning of the original program is exactly preserved by the final binary. There is also the CompCert C compiler that is a high-assurance compiler for embedded system. Neither of these are suitable for a Java deployment.
 
 Research significance and prior work \cite{8972014}.
 
@@ -29,7 +41,7 @@ Research significance and prior work \cite{8972014}.
 
 \noindent\textbf{Phase 1}: validate a Dafny model that was created from some existing Java implementation
 
-The Dafny model includes contracts on methods and the ability to prove assertions. It is very hard to know if the contracts are strong enough to prove meaningful assertions. The work is to generate Dafny programs from the existing JUnit tests in the Java implementation to eee if the contracts in the Dafny model are strong enough to prove the assertions on the test outcomes. If Dafny fails to prove a test outcome, then the contracts need to be strengthened in the Dafny model. 
+The Dafny model includes contracts on methods and the ability to prove assertions. It is very hard to know if the contracts are strong enough to prove meaningful assertions. The work is to generate Dafny programs from the existing JUnit tests in the Java implementation to see if the contracts in the Dafny model are strong enough to prove the assertions on the test outcomes. If Dafny fails to prove a test outcome, then the contracts need to be strengthened in the Dafny model. 
 
 It may be possible to use a failed assertion to automatically strengthen a contract using an interplant similar to CEGAR refinement. That is an open question that could be explored.
 
@@ -40,13 +52,13 @@ Dafny models provide some assurance of correctness. Dafny uses the contracts to 
 The work is to generate a test suite from the Java implementation that gives object-level branch coverage (byte-code branch coverage) of the implementation. The Dayny contracts are used as function summaries to bypass call-sites in generating tests. The post-conditions serve as oracles for the generated tests. The pre-conditions constrain the input space for test generation. A blame for defect isolation is resolved by rerunning the test in the Dafny model: ether the contracts are not sufficient to conclude the test, or they are and therefore there is a defect in the Java implementation.
 
 \begin{compactitem}
-  \item Constrain symbolic execution for a method in Java with the weakest pre-condition on the contract in Dafny <— how should quantifiers be handled?
-  \item Replace method call sites in Java with the contracts from Dafny (these are the method summaries) <— a method call is an uninterpreted function. The pre-condition is an assert in the symbolic execution. The post-condition is a constraint on the path.
-  \item Use symbolic execution to generate tests for object level branch coverage (byte-code branch coverage) <— for field references, do not use general symbolic execution; rather, treat each field reference as as symbolic variable in the path constraint. 
-  \item Instantiate objects with mocks with the needed defined functionality according to the solution from the SMT solver <— these objects and field values may not be exist in the “real” program (sound?)
+  \item Constrain symbolic execution for a method in Java with the weakest pre-condition on the contract in Dafny --- how should quantifiers be handled?
+  \item Replace method call sites in Java with the contracts from Dafny (these are the method summaries) --- a method call is an uninterpreted function. The pre-condition is an assert in the symbolic execution. The post-condition is a constraint on the path.
+  \item Use symbolic execution to generate tests for object level branch coverage (byte-code branch coverage) --- for field references, do not use general symbolic execution; rather, treat each field reference as as symbolic variable in the path constraint. 
+  \item Instantiate objects with mocks with the needed defined functionality according to the solution from the SMT solver --- these objects and field values may not be exist in the “real” program (sound?)
   \item Run all tests with JUnit, Mockito, and Maven
-  \item Use the contract post-condition as the oracle <— how would this be accomplished? Would need to turn the contract into Java is some way. Right?
-  \item Define a metric for “contract coverage” and use the tests to better understand the contract <— hard to do if the contract is too we
+  \item Use the contract post-condition as the oracle --- how would this be accomplished? Would need to turn the contract into Java is some way. Right?
+  \item Define a metric for “contract coverage” and use the tests to better understand the contract --- hard to do if the contract is too we
 \end{compactitem}
 
 Proof of concept system: Traverse the Eclipse DOM to construct the CFG for the method under test. Traverse the CFG to generate candidate paths for test generation. Each path is a sequential program with no branching. Symbolic execute the sequential program to generate the SMT problem thot will find the primary inputs. All method call sites generate a test to violate the pre-condition if possible. The post-condition is added to the path-constraint after the call.
