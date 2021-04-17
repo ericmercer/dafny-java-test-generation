@@ -3,6 +3,25 @@
 \usepackage{appendix}
 \usepackage[numbib]{tocbibind}
 \usepackage{paralist}
+\usepackage{listings}
+\usepackage{graphics}
+
+\lstset{frame=none,
+  language=Java,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=3,
+  morekeywords={reads, modifies, requires, ensures}
+}
+
 
 \newcommand{\figref}[1]{Fig.~\ref{#1}}
 
@@ -18,7 +37,7 @@
 \end{abstract}
 
 \providecommand{\keywords}[1]{\noindent\textbf{Keywords -- } \textit{#1}}
-\keywords{Contract programming, Dafny, Test generation, Symbolic Execution, Weakest pre-condition, branch coverage}
+\keywords{Contracts, Dafny, Test generation, Coverage, Symbolic Execution}
 
 \section*{Introduction}
 \emph{Contract programming} prescribes that designers write a precise interface specification for software components that can be used to reason about implementations. A \emph{contract} is a declarative specification of what the software component computes and under what conditions that computation is correct. It defines required \emph{pre-conditions} for a component's state and input at invocation, and it defines the guaranteed \emph{post-conditions} of the component's state and outputs after invocation. Contract programming reduces defects and increases reliability by giving pause to the designer to think critically about, and state formally, the intent of each software component in context of the system and by providing early in the design process a robust foundation on which to build, test, debug, and automated reasoning. 
@@ -45,16 +64,64 @@ There are few example of fully verified compilers. A notable example is perhaps 
 
 Research significance and prior work \cite{8972014}.
 
-\section*{Methods}
+\newsavebox{\boxa}
+\begin{lrbox}{\boxa}
+    \begin{lstlisting}
+      class T {
+        var f : int;
+
+        predicate method isF(f : int)
+        reads `f {
+          (f == this.f)
+        }
+      }
+      
+      class I {
+        var s : bool;
+        var a : bool;
+
+        method o(t : T, f : int)
+        requires !s && !a
+        ensures (s == t.isF(f)) && (a == !s) 
+        modifies `s, `a {
+          var isF := t.isF(f);
+          a := !isF;
+          if (!a) {
+            s := true;
+          }
+        }
+    \end{lstlisting}
+\end{lrbox}
+
+\newsavebox{\boxb}
+\begin{lrbox}{\boxb}
+    \begin{lstlisting}
+        var isF := t.isF(f);
+        a := !isF;
+        assume(!a);
+        s := true;
+
+        (b)
+
+
+
+
+        var isF := t.isF(f);
+        a := !isF;
+        assume(a);
+        s := true;
+
+        (c)
+    \end{lstlisting}
+\end{lrbox}
 
 Automatic test generation in this work is accomplished with either the Dafny verifier using its weakest pre-condition calculus or symbolic execution. Both approaches rely on constraint solving with a backend \emph{Satisfiability Modulus Theories} (SMT) solver. This presentation uses \emph{symbolic execution} but it is not clear that one approach is more advantageous than another. Indeed, there is some obvious advantage with integrating test generation into the Dafny Verifier as it already provides much of the needed functionality.
 
 \begin{figure}
-  See \emph{no-branch-no-side-effect.dfy}
   \begin{center}
-    \begin{tabular}{ccc}
-      \texttt{T} and \texttt{I.o} & \texttt{I.oTruePath} & \texttt{I.oFalsePath} \\
-      (a) & (b) & (c) 
+    \begin{tabular}{cc}
+      \scalebox{0.95}{\usebox{\boxa}} & \scalebox{0.95}{\usebox{\boxb}} \\
+      (a) & 
     \end{tabular}
   \end{center}
 \caption{Dafny model of a simple system with its two paths. (a) The original program. (b) The straight line program for the true branch. (c) The straight line program for the false branch.}
@@ -81,12 +148,97 @@ The initial path constraint for the straight line program is $\neg s_0\ \wedge\ 
 
 The path constraint is passed to the backend SMT solver to generate inputs for the true path test: $s_0 = \mathrm{false}$, $a_0 = \mathrm{false}$, and $\mathit{t.isF}_0 = \mathrm{false}$. The generated JUnit test uses a \emph{mock} object for an instance of \texttt{T} for the test and directs the mock to return true whenever \texttt{T.isF(f)} is invoked.\footnote{Mockito is to be used for mocks.} The oracle for the test is the post-condition itself. Although s simple example, it illustrates the utility of the frame in the Dafny specification to simplify the path constraint by abstracting out needless details. 
 
+\newsavebox{\boxd}
+\begin{lrbox}{\boxd}
+    \begin{lstlisting}
+      class T {
+        var f : int;
+        var l : int;  
+        var v : bool;
+
+        function method isF(f : int) : bool
+        reads `v, `f {
+          (v && f == this.f)
+        }
+
+        method setV(f : int) 
+        ensures v == old(isF(f))
+        modifies `v {
+          v := isF(f);
+        }
+
+        function method getL() : int
+        reads `l {
+          l
+        }
+      }
+
+      datatype R = O | C | D
+
+      class I {
+        var a : bool;
+        var l : int;
+        var s : R;
+
+        method o(t : T, f : int)
+        requires !a && (s == C)
+        ensures (a == !old(t.isF(f)))
+        ensures if (!a && l >= t.getL()) then 
+                  s == O 
+                else 
+                  s == old(s)
+        modifies t, `a, `s {
+          a := !t.isF(f);
+          if (!a && l >= t.getL()) {
+            s := O;
+          }
+        }
+      }
+    \end{lstlisting}
+\end{lrbox}
+
+
+\newsavebox{\boxe}
+\begin{lrbox}{\boxe}
+    \begin{lstlisting}
+      a := !t.isF(f);
+      assume (!a && l >= t.getL());
+      s := O;
+
+      (b)
+
+
+
+
+
+
+
+      method testOpaque() {
+        var i: I := new I;
+        i.a := false;
+        i.l := 0;
+        i.s := C;
+        var t: T := new T;
+        var f: int;
+        assume (t.isF(f) == true);
+        assume (t.getL() == 0);
+        var old_s := i.s;
+        i.o(t, f);
+        assert (if (!i.a && i.l >= t.getL()) then 
+                  i.s == O 
+                else 
+                  i.s == old_s);
+      }
+
+      (c)
+    \end{lstlisting}
+\end{lrbox}
+
 \begin{figure}
-  See \emph{side-effect.dfy}
   \begin{center}
-    \begin{tabular}{ccc}
-      \texttt{T} and \texttt{I.o} & \texttt{I.oTruePath} & \texttt{testOpaque}  \\
-      (a) & (b) & (c)
+    \begin{tabular}{cc}
+      \scalebox{0.95}{\usebox{\boxd}} & \scalebox{0.95}{\usebox{\boxe}}  \\
+      (a) & 
     \end{tabular}
   \end{center}
 \caption{Dafny model of a simple system that side-effects in both objects. (a) The original program. (b) The straight line program for the true branch. (c) The generated test for the path written in Dafny.}
@@ -95,13 +247,15 @@ The path constraint is passed to the backend SMT solver to generate inputs for t
 
 Consider a slightly more complex example in \figref{fig:side_effect}(a). This Dafny program adds complexty to class \texttt{T} with a side-effect on its state, and it adds complexity to the specification and implementation of \texttt{I.o(t : T, f : int)}. The straight line program for the true path is in \figref{fig:side_effect}(a). Here the path depends on both \texttt{t.isF(f)} and \texttt{t.getL()}, but again, an analysis of the frames for each method in class \texttt{T} show the frames to be independent, so both calls can be safely replaced with uninterpreted functions in the symbolic execution.
 
-The final path constraint from symbolic execution is $\neg a_0\ \wedge (s_0 = C)\ \wedge \mathit{t.isF}_0\ \wedge\ (l\ \ge\ \mathit{t.getL}_0)$. Here the assume statements are equivalent to the mocks that would be created in a JUnit test. What is interesting in this test is that the ensures statement in the specification makes reference to the \emph{old} value of field \texttt{s}. The old value is the value before the method call. The test must capture the value in a local variable before the method invocation in order to use that old value in the assertion.
+The final path constraint from symbolic execution is $\neg a_0\ \wedge (s_0 = C)\ \wedge \mathit{t.isF}_0\ \wedge\ (l\ \ge\ \mathit{t.getL}_0)$. Here the assume statements are equivalent to the mocks that would be created in a JUnit test. What is interesting in this test is that the ensures statement in the specification makes reference to the \emph{old} value of field \texttt{s}. The old value is the value before the method call. The test must capture the value in a local variable before the method invocation in order to use that old value in the assertion. 
+
+This example also illustrates the need for specification coverage as both sides of the if-statement in the contract must be considered. This proposal first generates tests for branch coverage, and if those are not sufficient for specification coverage, it generates any additional tests. 
 
 It is not always the case that frames are independent. Test generation is able to statically detect when there are dependent frames and change the behavior of symbolic execution. The most direct solution is to replace dependent call-sites with the contracts in the specifications after which symbolic execution proceeds as expected. Indeed, this solution is what is used by the Dafny verifier. This proposal however takes inspiration from SMT solvers: first solve the constraint problem with uninterpreted functions; and second, with dependency analysis, solve the secondary constraint problems for each of the expanded call sites. Expansion uses only the contracts. And the secondary constraint problems only consider dependent method calls.
 
 Symbolic execution must track side-effecting calls and introduce new uninterpreted functions as appropriate. For example, a second call to \texttt{T.isF(f : int)} should create a new uninterpreted function since its value might be different from the first call, and such information should be captured in the symbol table and path constraint as appropriate. Also note that it is possible to skip the secondary constraint problem with the flattened contracts to rather over-approximate actual program behavior using mocks. The mocks can be configured to return the needed sequence of program values to test the path. Depending on the code being tested, such an over-approximation may be sufficient for the test though there are two things to consider: first, what if such a path is not feasible in any real execution (i.e., there does not exist any input that would exercise that path); and second, what does a passing or failing test mean? Here it is not clear if such an over-approximation is sound and the question merits further investigation.
 
-Not discussed yet are looping structures, inductive types, and recursion. Dafny specifications provide invariants for loop termination. This proposal is to apply something similar to \texttt{HAVOC} to replace loops with invariants (cite HAVOC). Inductive types, recursion, and other advanced Dafny features (lemmas, ghosting, etc.) are not considered in this proposal. This proposal focuses on test generation using the specification for dependency analysis and path constraint simplification in the absence of these more advanced language constructs.
+Not discussed thus far are quantifies in the specification. These may require more advanced theories in the SMT solver if they appear in the path constraint because of a pre-condition, and they need to be translated into appropriate looping structures for asserts when they appear in a post-condition.  Also, not discussed yet are looping structures, inductive types, and recursion. Dafny specifications provide invariants for loop termination. This proposal is to apply something similar to \texttt{HAVOC} to replace loops with invariants (cite HAVOC). Inductive types, recursion, and other advanced Dafny features (lemmas, ghosting, etc.) are not considered in this proposal. This proposal focuses on test generation using the specification for dependency analysis and path constraint simplification in the absence of these more advanced language constructs.
 
 \section*{Expected Results}
 Please include milestones with timeline estimates, such as for datasets, code releases, technical reports, publications, applications, presentations, etc. 
