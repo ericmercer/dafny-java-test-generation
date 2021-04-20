@@ -1,5 +1,58 @@
+@MastersThesis{Billeter:Thesis:2008,
+    author     =     {J\"{u}rg Billeter},
+    title     =     {{Counterexample Execution}},
+    school     =     {{ETH} Zurich},
+    address     =     {Germany},
+    year     =     {2008},
+    }
+
+@article{KRENN200971,
+title = {Test Case Generation by Contract Mutation in {S}pec{\#}},
+journal = {Electronic Notes in Theoretical Computer Science},
+volume = {253},
+number = {2},
+pages = {71-86},
+year = {2009},
+note = {Proceedings of Fifth Workshop on Model Based Testing (MBT 2009)},
+issn = {1571-0661},
+doi = {https://doi.org/10.1016/j.entcs.2009.09.052},
+url = {https://www.sciencedirect.com/science/article/pii/S157106610900406X},
+author = {Willibald Krenn and Bernhard K. Aichernig},
+keywords = {test case generation, mutation testing, contract mutation, Spec#, Boogie, Z3},
+abstract = {Mutation testing is a well known fault-based testing technique that is normally used to assess the quality of a test suite. In this paper we use the mutation operation to derive test cases that demonstrate the absence of certain faults in an implementation: In difference to conventional mutation testing, which mutates program code, we mutate program contracts and generate test-input data that is able to distinguish the mutated contract from the original one. We show how existing development tools can be used as a foundation for the presented methodology: In particular we rely on the counter-example generation capabilities of the Spec#/Boogie/Z3 system.}
+}
+
+@InProceedings{10.1007/978-3-540-69507-3_9,
+author="Meyer, Bertrand
+and Ciupa, Ilinca
+and Leitner, Andreas
+and Liu, Lisa Ling",
+editor="van Leeuwen, Jan
+and Italiano, Giuseppe F.
+and van der Hoek, Wiebe
+and Meinel, Christoph
+and Sack, Harald
+and Pl{\'a}{\v{s}}il, Franti{\v{s}}ek",
+title="Automatic Testing of Object-Oriented Software",
+booktitle="SOFSEM 2007: Theory and Practice of Computer Science",
+year="2007",
+publisher="Springer Berlin Heidelberg",
+address="Berlin, Heidelberg",
+pages="114--129",
+abstract="Effective testing involves preparing test oracles and test cases, two activities which are too tedious to be effectively performed by humans, yet for the most part remain manual. The AutoTest unit testing framework automates both, by using Eiffel contracts --- already present in the software --- as test oracles, and generating objects and routine arguments to exercise all given classes; manual tests can also be added, and all failed test cases are automatically retained for regression testing, in a ``minimized'' form retaining only the relevant instructions. AutoTest has already detected numerous hitherto unknown bugs in production software.",
+isbn="978-3-540-69507-3"
+}
+
+@INPROCEEDINGS{Ciupa05automatictesting,
+    author = {Ilinca Ciupa and Andreas Leitner},
+    title = {Automatic testing based on design by contract},
+    booktitle = {In Proceedings of Net.ObjectDays 2005 (6th Annual International Conference on Object-Oriented and Internet-based Technologies, Concepts, and Applications for a Networked World},
+    year = {2005},
+    pages = {545--557}
+}
+
 @INPROCEEDINGS{8972014,
-  author={M. {Lindner} and N. {Fitinghoff} and J. {Eriksson} and P. {Lindgren}},
+  author={Lindner, Marcus and Fitinghoff, Nils and Eriksson, Johan and Lindgren, Per},
   booktitle={2019 IEEE 17th International Conference on Industrial Informatics (INDIN)}, 
   title={Verification of Safety Functions Implemented in Rust - a Symbolic Execution based approach}, 
   year={2019},
@@ -7,3 +60,366 @@
   number={},
   pages={432-439},
   doi={10.1109/INDIN41052.2019.8972014}}
+
+  @INPROCEEDINGS{8471992,
+  author={Lindner, Marcus and Aparicius, Jorge and Lindgren, Per},
+  booktitle={2018 IEEE 16th International Conference on Industrial Informatics (INDIN)}, 
+  title={No Panic! Verification of Rust Programs by Symbolic Execution}, 
+  year={2018},
+  volume={},
+  number={},
+  pages={108-114},
+  doi={10.1109/INDIN.2018.8471992}}
+
+@article{10.1145/3022670.2951930,
+author = {Dimoulas, Christos and New, Max S. and Findler, Robert Bruce and Felleisen, Matthias},
+title = {Oh Lord, Please Don't Let Contracts Be Misunderstood (Functional Pearl)},
+year = {2016},
+issue_date = {September 2016},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {51},
+number = {9},
+issn = {0362-1340},
+url = {https://doi.org/10.1145/3022670.2951930},
+doi = {10.1145/3022670.2951930},
+abstract = {Contracts feel misunderstood, especially those with a higher-order soul. While software engineers appreciate contracts as tools for articulating the interface between components, functional programmers desperately search for their types and meaning, completely forgetting about their pragmatics. This gem presents a novel analysis of contract systems. Applied to the higher-order kind, this analysis reveals their large and clearly unappreciated software engineering potential. Three sample applications illustrate where this kind of exploration may lead.},
+journal = {SIGPLAN Not.},
+month = sep,
+pages = {117–131},
+numpages = {15},
+keywords = {Specifications, Language design, Contracts}
+}
+
+@article{10.1145/583852.581484,
+author = {Findler, Robert Bruce and Felleisen, Matthias},
+title = {Contracts for Higher-Order Functions},
+year = {2002},
+issue_date = {September 2002},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {37},
+number = {9},
+issn = {0362-1340},
+url = {https://doi.org/10.1145/583852.581484},
+doi = {10.1145/583852.581484},
+abstract = {Assertions play an important role in the construction of robust software. Their use in programming languages dates back to the 1970s. Eiffel, an object-oriented programming language, wholeheartedly adopted assertions and developed the "Design by Contract" philosophy. Indeed, the entire object-oriented community recognizes the value of assertion-based contracts on methods.In contrast, languages with higher-order functions do not support assertion-based contracts. Because predicates on functions are, in general, undecidable, specifying such predicates appears to be meaningless. Instead, the functional languages community developed type systems that statically approximate interesting predicates.In this paper, we show how to support higher-order function contracts in a theoretically well-founded and practically viable manner. Specifically, we introduce λcon, a typed lambda calculus with assertions for higher-order functions. The calculus models the assertion monitoring system that we employ in DrScheme. We establish basic properties of the model (type soundness, etc.) and illustrate the usefulness of contract checking with examples from DrScheme's code base.We believe that the development of an assertion system for higher-order functions serves two purposes. On one hand, the system has strong practical potential because existing type systems simply cannot express many assertions that programmers would like to state. On the other hand, an inspection of a large base of invariants may provide inspiration for the direction of practical future type system research.},
+journal = {SIGPLAN Not.},
+month = sep,
+pages = {48–59},
+numpages = {12},
+keywords = {behavioral specifications, predicate typing, solfware reliability, higher-order functions, contracts}
+}
+
+@article{10.1145/3158139,
+author = {Nguyundefinedn, Ph\'{u}c C. and Gilray, Thomas and Tobin-Hochstadt, Sam and Van Horn, David},
+title = {Soft Contract Verification for Higher-Order Stateful Programs},
+year = {2017},
+issue_date = {January 2018},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {2},
+number = {POPL},
+url = {https://doi.org/10.1145/3158139},
+doi = {10.1145/3158139},
+abstract = {Software contracts allow programmers to state rich program properties using the full expressive power of an object language. However, since they are enforced at runtime, monitoring contracts imposes significant overhead and delays error discovery. So contract veri cation aims to guarantee all or most of these properties ahead of time, enabling valuable optimizations and yielding a more general assurance of correctness. Existing methods for static contract verification satisfy the needs of more restricted target languages, but fail to address the challenges unique to those conjoining untyped, dynamic programming, higher-order functions, modularity, and statefulness. Our approach tackles all these features at once, in the context of the full Racket system—a mature environment for stateful, higher-order, multi-paradigm programming with or with- out types. Evaluating our method using a set of both pure and stateful benchmarks, we are able to verify 99.94% of checks statically (all but 28 of 49, 861).  Stateful, higher-order functions pose significant challenges for static contract verification in particular. In the presence of these features, a modular analysis must permit code from the current module to escape permanently to an opaque context (unspecified code from outside the current module) that may be stateful and therefore store a reference to the escaped closure. Also, contracts themselves, being predicates wri en in unrestricted Racket, may exhibit stateful behavior; a sound approach must be robust to contracts which are arbitrarily expressive and interwoven with the code they monitor. In this paper, we present and evaluate our solution based on higher-order symbolic execution, explain the techniques we used to address such thorny issues, formalize a notion of behavioral approximation, and use it to provide a mechanized proof of soundness.},
+journal = {Proc. ACM Program. Lang.},
+month = dec,
+articleno = {51},
+numpages = {30},
+keywords = {symbolic execution, Higher-order contracts}
+}
+
+@InProceedings{10.1007/978-3-642-28869-2_11,
+author="Dimoulas, Christos
+and Tobin-Hochstadt, Sam
+and Felleisen, Matthias",
+editor="Seidl, Helmut",
+title="Complete Monitors for Behavioral Contracts",
+booktitle="Programming Languages and Systems",
+year="2012",
+publisher="Springer Berlin Heidelberg",
+address="Berlin, Heidelberg",
+pages="214--233",
+abstract="A behavioral contract in a higher-order language may invoke methods of unknown objects. Although this expressive power allows programmers to formulate sophisticated contracts, it also poses a problem for language designers. Indeed, two distinct semantics have emerged for such method calls, dubbed lax and picky. While lax fails to protect components in certain scenarios, picky may blame an uninvolved party for a contract violation.",
+isbn="978-3-642-28869-2"
+}
+
+@inproceedings{10.1145/2034773.2034800,
+author = {Disney, Tim and Flanagan, Cormac and McCarthy, Jay},
+title = {Temporal Higher-Order Contracts},
+year = {2011},
+isbn = {9781450308656},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/2034773.2034800},
+doi = {10.1145/2034773.2034800},
+abstract = {Behavioral contracts are embraced by software engineers because they document module interfaces, detect interface violations, and help identify faulty modules (packages, classes, functions, etc). This paper extends prior higher-order contract systems to also express and enforce temporal properties, which are common in software systems with imperative state, but which are mostly left implicit or are at best informally specified. The paper presents both a programmatic contract API as well as a temporal contract language, and reports on experience and performance results from implementing these contracts in Racket.Our development formalizes module behavior as a trace of events such as function calls and returns. Our contract system provides both non-interference (where contracts cannot influence correct executions) and also a notion of completeness (where contracts can enforce any decidable, prefix-closed predicate on event traces).},
+booktitle = {Proceedings of the 16th ACM SIGPLAN International Conference on Functional Programming},
+pages = {176–188},
+numpages = {13},
+keywords = {higher-order programming, temporal contracts},
+location = {Tokyo, Japan},
+series = {ICFP '11}
+}
+
+@article{10.1145/2034574.2034800,
+author = {Disney, Tim and Flanagan, Cormac and McCarthy, Jay},
+title = {Temporal Higher-Order Contracts},
+year = {2011},
+issue_date = {September 2011},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {46},
+number = {9},
+issn = {0362-1340},
+url = {https://doi.org/10.1145/2034574.2034800},
+doi = {10.1145/2034574.2034800},
+abstract = {Behavioral contracts are embraced by software engineers because they document module interfaces, detect interface violations, and help identify faulty modules (packages, classes, functions, etc). This paper extends prior higher-order contract systems to also express and enforce temporal properties, which are common in software systems with imperative state, but which are mostly left implicit or are at best informally specified. The paper presents both a programmatic contract API as well as a temporal contract language, and reports on experience and performance results from implementing these contracts in Racket.Our development formalizes module behavior as a trace of events such as function calls and returns. Our contract system provides both non-interference (where contracts cannot influence correct executions) and also a notion of completeness (where contracts can enforce any decidable, prefix-closed predicate on event traces).},
+journal = {SIGPLAN Not.},
+month = sep,
+pages = {176–188},
+numpages = {13},
+keywords = {temporal contracts, higher-order programming}
+}
+
+@InProceedings{10.1007/978-3-642-23702-7_26,
+author="Donaldson, Alastair F.
+and Haller, Leopold
+and Kroening, Daniel
+and R{\"u}mmer, Philipp",
+editor="Yahav, Eran",
+title="Software Verification Using k-Induction",
+booktitle="Static Analysis",
+year="2011",
+publisher="Springer Berlin Heidelberg",
+address="Berlin, Heidelberg",
+pages="351--368",
+abstract="We present combined-case k-induction, a novel technique for verifying software programs. This technique draws on the strengths of the classical inductive-invariant method and a recent application of k-induction to program verification. In previous work, correctness of programs was established by separately proving a base case and inductive step. We present a new k-induction rule that takes an unstructured, reducible control flow graph (CFG), a natural loop occurring in the CFG, and a positive integer k, and constructs a single CFG in which the given loop is eliminated via an unwinding proportional to k. Recursively applying the proof rule eventually yields a loop-free CFG, which can be checked using SAT-/SMT-based techniques. We state soundness of the rule, and investigate its theoretical properties. We then present two implementations of our technique: K-Inductor, a verifier for C programs built on top of the CBMC model checker, and K-Boogie, an extension of the Boogie tool. Our experiments, using a large set of benchmarks, demonstrate that our k-induction technique frequently allows program verification to succeed using significantly weaker loop invariants than are required with the standard inductive invariant approach.",
+isbn="978-3-642-23702-7"
+}
+
+@InProceedings{10.1007/978-3-319-96142-2_3,
+author="Gacek, Andrew
+and Backes, John
+and Whalen, Mike
+and Wagner, Lucas
+and Ghassabani, Elaheh",
+editor="Chockler, Hana
+and Weissenbacher, Georg",
+title="The JKind Model Checker",
+booktitle="Computer Aided Verification",
+year="2018",
+publisher="Springer International Publishing",
+address="Cham",
+pages="20--27",
+abstract="JKind is an open-source industrial model checker developed by Rockwell Collins and the University of Minnesota. JKind uses multiple parallel engines to prove or falsify safety properties of infinite state models. It is portable, easy to install, performance competitive with other state-of-the-art model checkers, and has features designed to improve the results presented to users: inductive validity cores for proofs and counterexample smoothing for test-case generation. It serves as the back-end for various industrial applications.",
+isbn="978-3-319-96142-2"
+}
+
+@InProceedings{10.1007/978-3-642-28891-3_13,
+author="Cofer, Darren
+and Gacek, Andrew
+and Miller, Steven
+and Whalen, Michael W.
+and LaValley, Brian
+and Sha, Lui",
+editor="Goodloe, Alwyn E.
+and Person, Suzette",
+title="Compositional Verification of Architectural Models",
+booktitle="NASA Formal Methods",
+year="2012",
+publisher="Springer Berlin Heidelberg",
+address="Berlin, Heidelberg",
+pages="126--140",
+abstract="This paper describes a design flow and supporting tools to significantly improve the design and verification of complex cyber-physical systems. We focus on system architecture models composed from libraries of components and complexity-reducing design patterns having formally verified properties. This allows new system designs to be developed rapidly using patterns that have been shown to reduce unnecessary complexity and coupling between components. Components and patterns are annotated with formal contracts describing their guaranteed behaviors and the contextual assumptions that must be satisfied for their correct operation. We describe the compositional reasoning framework that we have developed for proving the correctness of a system design, and provide a proof of the soundness of our compositional reasoning approach. An example based on an aircraft flight control system is provided to illustrate the method and supporting analysis tools.",
+isbn="978-3-642-28891-3"
+}
+
+@InProceedings{10.1007/3-540-48249-0_34,
+author="Caspi, Paul
+and Mazuet, Christine
+and Salem, Rym
+and Weber, Daniel",
+editor="Felici, Massimo
+and Kanoun, Karama",
+title="Forma Design of Distributed Control Systems with Lustre",
+booktitle="Computer Safety, Reliability and Security",
+year="1999",
+publisher="Springer Berlin Heidelberg",
+address="Berlin, Heidelberg",
+pages="396--409",
+abstract="During the last decade, the synchronous approach has proved to meet industrial needs concerning the development of Distributed Control Systems (DCS): as an example, Schneider Electric has adopted the synchronous language Lustre and the associated tool Scade for developing monitoring systems for nuclear power plants. But so far, engineers make use of Lustre- Scade for designing separately single components of a DCS. This paper focuses on the use of Lustre-Scade for designing DCS as a whole. Two valuable consequences of this approach are that (1) the same framework can be used for both programming, simulating, testing and proving properties of a distributed system, and (2) the proposed approach is fully consistent with the usual engineering abstractions concerning smooth signals.",
+isbn="978-3-540-48249-9"
+}
+
+@InProceedings{10.1007/978-3-319-41540-6_29,
+author="Champion, Adrien
+and Mebsout, Alain
+and Sticksel, Christoph
+and Tinelli, Cesare",
+editor="Chaudhuri, Swarat
+and Farzan, Azadeh",
+title="The Kind 2 Model Checker",
+booktitle="Computer Aided Verification",
+year="2016",
+publisher="Springer International Publishing",
+address="Cham",
+pages="510--517",
+abstract="Kind 2 is an open-source, multi-engine, SMT-based model checker for safety properties of finite- and infinite-state synchronous reactive systems. It takes as input models written in an extension of the Lustre language that allows the specification of assume-guarantee-style contracts for system components. Kind 2 was implemented from scratch based on techniques used by its predecessor, the PKind model checker. This paper discusses a number of improvements over PKind in terms of invariant generation. It also introduces two main features: contract-based compositional reasoning and certificate generation.",
+isbn="978-3-319-41540-6"
+}
+
+@InProceedings{10.1007/3-540-45314-8_21,
+author="Jacobs, Bart
+and Poll, Erik",
+editor="Hussmann, Heinrich",
+title="A Logic for the Java Modeling Language JML",
+booktitle="Fundamental Approaches to Software Engineering",
+year="2001",
+publisher="Springer Berlin Heidelberg",
+address="Berlin, Heidelberg",
+pages="284--299",
+abstract="This paper describes a specialised logic for proving specifications in the Java Modeling Language (JML). JML is an interface specification language for Java. It allows assertions like invariants, constraints, pre- and post-conditions, and modifiable clauses as annotations to Java classes, in a design-by-contract style. Within the LOOP project at the University of Nijmegen JML is used for specification and verification of Java programs. A special compiler has been developed which translates Java classes together with their JML annotations into logical theories for a theorem prover (PVS or Isabelle). The logic for JML that will be described here consists of tailor-made proof rules in the higher order logic of the back-end theorem prover for verifying translated JML specifications. The rules efficiently combine partial and total correctness (like in Hoare logic) for all possible termination modes in Java, in a single correctness formula.",
+isbn="978-3-540-45314-7"
+}
+
+@Inbook{Huisman2016,
+author="Huisman, Marieke
+and Ahrendt, Wolfgang
+and Grahl, Daniel
+and Hentschel, Martin",
+editor="Ahrendt, Wolfgang
+and Beckert, Bernhard
+and Bubel, Richard
+and H{\"a}hnle, Reiner
+and Schmitt, Peter H.
+and Ulbrich, Mattias",
+title="Formal Specification with the Java Modeling Language",
+bookTitle="Deductive Software Verification -- The KeY Book: From Theory to Practice",
+year="2016",
+publisher="Springer International Publishing",
+address="Cham",
+pages="193--241",
+abstract="This text is a general, self contained, and tool  independent introduction into the Java Modeling Language, JML. It  appears in a book about the KeY approach and tool for the  verification of Java software, because JML is the dominating  starting point of KeY style Java verification. However, this chapter  does not depend on any specific tool nor verification methodology in  any way. This introduction is written for all readers with an  interest in formal specification of software in general, and anyone  who wants to learn about the JML approach to specification in  particular.",
+isbn="978-3-319-49812-6",
+doi="10.1007/978-3-319-49812-6_7",
+url="https://doi.org/10.1007/978-3-319-49812-6_7"
+}
+
+@InProceedings{10.1007/978-3-642-27705-4_7,
+author="Rustan, K.
+and Leino, M.",
+editor="Joshi, Rajeev
+and M{\"u}ller, Peter
+and Podelski, Andreas",
+title="Developing Verified Programs with Dafny",
+booktitle="Verified Software: Theories, Tools, Experiments",
+year="2012",
+publisher="Springer Berlin Heidelberg",
+address="Berlin, Heidelberg",
+pages="82--82",
+abstract="Dafny [2] is a programming language and program verifier. The language is type-safe and sequential, and it includes common imperative features, dynamic object allocation, and inductive datatypes. It also includes specification constructs like pre- and postconditions, which let a programmer record the intended behavior of the program along with the executable code that is supposed to cause that behavior. Because the Dafny verifier runs continuously in the background, the consistency of a program and its specifications is always enforced.",
+isbn="978-3-642-27705-4"
+}
+
+@book{DBLP:series/lncs/10001,
+  editor    = {Wolfgang Ahrendt and
+               Bernhard Beckert and
+               Richard Bubel and
+               Reiner H{\"{a}}hnle and
+               Peter H. Schmitt and
+               Mattias Ulbrich},
+  title     = {Deductive Software Verification - The KeY Book - From Theory to Practice},
+  series    = {Lecture Notes in Computer Science},
+  volume    = {10001},
+  publisher = {Springer},
+  year      = {2016},
+  url       = {https://doi.org/10.1007/978-3-319-49812-6},
+  doi       = {10.1007/978-3-319-49812-6},
+  isbn      = {978-3-319-49811-9},
+  timestamp = {Tue, 14 May 2019 10:00:55 +0200},
+  biburl    = {https://dblp.org/rec/series/lncs/10001.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{ESOP18,
+  author    = {Lars Hupel and
+               Tobias Nipkow},
+  title     = {A Verified Compiler from {Isabelle/HOL} to {CakeML}},
+  booktitle = {European Symposium on Programming ({ESOP})},
+  pages     = {999--1026},
+  series    = {Lecture Notes in Computer Science},
+  volume    = {10801},
+  publisher = {Springer},
+  editor    = {Amal Ahmed},
+  year      = {2018},
+  url       = {https://lars.hupel.info/pub/isabelle-cakeml.pdf},
+  doi       = {10.1007/978-3-319-89884-1\_35}}
+
+
+@article{10.1145/1631687.1596566,
+author = {Klein, Gerwin and Derrin, Philip and Elphinstone, Kevin},
+title = {Experience Report: SeL4: Formally Verifying a High-Performance Microkernel},
+year = {2009},
+issue_date = {September 2009},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {44},
+number = {9},
+issn = {0362-1340},
+url = {https://doi.org/10.1145/1631687.1596566},
+doi = {10.1145/1631687.1596566},
+abstract = {We report on our experience using Haskell as an executable specification language in the formal verification of the seL4 microkernel. The verification connects an abstract operational specification in the theorem prover Isabelle/HOL to a C implementation of the microkernel. We describe how this project differs from other efforts, and examine the effect of using Haskell in a large-scale formal verification. The kernel comprises 8,700 lines of C code; the verification more than 150,000 lines of proof script.},
+journal = {SIGPLAN Not.},
+month = aug,
+pages = {91–96},
+numpages = {6},
+keywords = {seL4, microkernel, Isabelle/HOL, haskell}
+}
+
+@article{Leroy-backend,
+  author = {Xavier Leroy},
+  title = {A formally verified compiler back-end},
+  journal = {Journal of Automated Reasoning},
+  volume = 43,
+  number = 4,
+  pages = {363--446},
+  year = 2009,
+  url = {http://xavierleroy.org/publi/compcert-backend.pdf},
+  urlpublisher = {http://dx.doi.org/10.1007/s10817-009-9155-4},
+  hal = {http://hal.inria.fr/inria-00360768/},
+  pubkind = {journal-int-mono}
+}
+
+@article{2008-Leroy-Blazy-memory-model,
+  author = {Xavier Leroy and Sandrine Blazy},
+  title = {Formal verification of a {C}-like memory model
+                 and its uses for verifying program transformations},
+  journal = {Journal of Automated Reasoning},
+  volume = 41,
+  number = 1,
+  pages = {1--31},
+  url = {http://xavierleroy.org/publi/memory-model-journal.pdf},
+  urlpublisher = {http://dx.doi.org/10.1007/s10817-008-9099-0},
+  hal = {http://hal.inria.fr/inria-00289542/},
+  year = 2008,
+  pubkind = {journal-int-multi}
+}
+
+@InProceedings{10.1007/978-3-030-03421-4_4,
+author="Beckert, Bernhard
+and Herda, Mihai
+and Kobischke, Stefan
+and Ulbrich, Mattias",
+editor="Margaria, Tiziana
+and Steffen, Bernhard",
+title="Towards a Notion of Coverage for Incomplete Program-Correctness Proofs",
+booktitle="Leveraging Applications of Formal Methods, Verification and Validation. Verification",
+year="2018",
+publisher="Springer International Publishing",
+address="Cham",
+pages="53--63",
+abstract="Deductive program verification can give high assurances for program correctness. But incomplete partial proofs do not provide any information as to what degree or with what probability the program is correct.",
+isbn="978-3-030-03421-4"
+}

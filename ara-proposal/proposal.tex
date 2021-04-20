@@ -54,15 +54,13 @@ Another area that could be explored as part of this proposal, which is a step to
  
 \subsection*{Related Work}
 
-Many different tools and languages integrate contract programming in different ways (e.g., Python, Typescript, Java, C/C++, Rust, Eiffel, Go, AGREE, etc.). Contracts can be higher-order or first-order depending on the language. Contracts are often used as programming annotations to improve readability of the code and enhance maintainability (e.g. Racket). This role is especially valuable in untyped script languages where making sense of expected types can be challenging if not the original author (e.g. Python, Javascript, Typescript, Perl). 
+Many different tools and languages integrate contract programming in different ways (e.g., Python, Typescript, Java, C/C++, Rust, Eiffel, Go, AGREE, etc.). Contracts can be higher-order or first-order depending on the language. Contracts are often used as programming annotations to improve readability of the code and enhance maintainability (e.g. Racket \cite{10.1145/3022670.2951930,10.1145/583852.581484,10.1145/2034574.2034800}). This role is especially valuable in untyped script languages where making sense of expected types can be challenging if not the original author (e.g. Python, Javascript, Typescript, Perl). 
 
-Contracts form the basis of runtime monitors to check pre-conditions and assert post-conditions. Monitors can be removed by proving an implementations adheres to its contract. Such proofs can be accomplished with static program analysis (abstract interpretation or type systems), model checking (k-induction in Lustre/AGREE), or constructive reasoning (weakest pre-condition or strongest post-condition calculus). Counter-examples from failed proofs often are some of the very best tests (e.g., generating tests from counter-examples).
+Contracts form the basis of runtime monitors to check pre-conditions and assert post-conditions \cite{10.1007/978-3-642-28869-2_11}. Monitors can be removed by proving an implementations adheres to its contract. Such proofs can be accomplished with static program analysis (abstract interpretation or type systems) \cite{10.1145/3158139}, model checking (k-induction in Lustre/AGREE) \cite{10.1007/978-3-642-23702-7_26,10.1007/978-3-319-96142-2_3, 10.1007/978-3-642-28891-3_13, 10.1007/3-540-48249-0_34, 10.1007/978-3-319-41540-6_29}, or deductive reasoning (weakest pre-condition or strongest post-condition calculus) \cite{10.1007/3-540-45314-8_21, Huisman2016, 10.1007/978-3-642-27705-4_7, DBLP:series/lncs/10001, 10.1007/978-3-030-03421-4_4}. Counter-examples from failed proofs often are some of the very best tests (e.g., generating tests from counter-examples) \cite{Billeter:Thesis:2008}.
 
-Contracts are equally useful for automated testing. A post-condition is a pre-defined, and convenient, test oracle. The pre-condition is an equally convenient, and useful, input constraint for property based testing and fuzz testing. The contracts can even be employed in mutation analysis to generate tests to show the refinement relation between the contract and the implementing code. 
+Contracts are equally useful for automated testing \cite{10.1007/978-3-540-69507-3_9, Ciupa05automatictesting, 8471992, 8972014}. A post-condition is a pre-defined, and convenient, test oracle. The pre-condition is an equally convenient, and useful, input constraint for property based testing and fuzz testing. The contracts can even be employed in mutation analysis to generate tests to show the refinement relation between the contract and the implementing code \cite{KRENN200971}. 
 
-There are few examples of fully verified compilers. A notable example is perhaps in the SeL4 operating system and the CakeML framework. These are fully verified in HOL4. CakeML carries a proof certificate that guarantees the meaning of the original program is exactly preserved by the final binary. There is also the CompCert C compiler that is a high-assurance compiler for embedded systems. Neither of these are suitable for a Java deployment.
-
-Research significance and prior work \cite{8972014}.
+There are few examples of fully verified compilers. A notable example is perhaps in the SeL4 operating system and the CakeML framework \cite{10.1145/1631687.1596566,ESOP18}. These are fully verified in HOL4. CakeML carries a proof certificate that guarantees the meaning of the original program is exactly preserved by the final binary. There is also the CompCert C compiler that is a high-assurance compiler for embedded systems \cite{Leroy-backend,2008-Leroy-Blazy-memory-model}. Neither of these are suitable for a Java deployment.
 
 \newsavebox{\boxa}
 \begin{lrbox}{\boxa}
@@ -266,7 +264,7 @@ Please include milestones with timeline estimates, such as for datasets, code re
 \appendixpage
 
 \bibliographystyle{plain}
-\bibliography{proposal.bib}
+\bibliography{proposal}
 
 \section{CV of PI}
 
