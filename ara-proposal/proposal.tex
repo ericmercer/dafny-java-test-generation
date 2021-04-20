@@ -25,11 +25,28 @@
 
 \newcommand{\figref}[1]{Fig.~\ref{#1}}
 
+\makeatletter
+\renewcommand{\maketitle}{\bgroup\setlength{\parindent}{0pt}
+\begin{flushleft}
+  \Large{\textbf{\@title}}
+  
+  \normalsize{\@author}
+\end{flushleft}\egroup
+}
+\makeatother
+
 \pagestyle{empty}
 \begin{document}
 
 \title{Symbolic Execution for Generating Java Tests from Dafny Models}
-\author{PI: Eric Mercer, Associate Professor, Computer Science, Brigham Young University}
+\author{\hfill \\
+        PI: Eric Mercer, Associate Professor, Computer Science, Brigham Young University\\
+        \hfill \\
+        Cash funding needed: \$53,420 \\
+        AWS Promotional Credits needed: none\\
+        \hfill \\
+        Amazon Contact: Sean Mclaughlin, Aleks Charkarov, Mattias Schalaipfer, \{seanmcl, aleksach, schlaipf\}@amazon.com}
+
 \maketitle
 
 \begin{abstract}
@@ -37,7 +54,7 @@
 \end{abstract}
 
 \providecommand{\keywords}[1]{\noindent\textbf{Keywords -- } \textit{#1}}
-\keywords{Contracts, Dafny, Test generation, Coverage, Symbolic Execution}
+\keywords{Contract programming, automatic test generation, symbolic execution}
 
 \section*{Introduction}
 \emph{Contract programming} prescribes that designers write a precise interface specification for software components that can be used to reason about implementations. A \emph{contract} is a declarative specification of what the software component computes and under what conditions that computation is correct. It defines required \emph{pre-conditions} for a component's state and input at invocation, and it defines the guaranteed \emph{post-conditions} of the component's state and outputs after invocation. Contract programming reduces defects and increases reliability by giving pause to the designer to think critically about, and state formally, the intent of each software component in context of the system and by providing early in the design process a robust foundation on which to build, test, debug, and automated reasoning. 
