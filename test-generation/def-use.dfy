@@ -95,7 +95,7 @@ method test_path0() {
 }
 
 // pc: !a_0 /\ !s_0 /\ t.isF_0 /\ !(l_0 >= t.getL_0)
-// SAT(pc): a = false, s = false, l == 0, t.isF(f) == true, t.getL() = 0
+// SAT(pc): a = false, s = false, l == 0, t.isF(f) == true, t.getL() = 1
 // Dependency: t.isF(f) (see frame for t.setV(f))
 // SAT(t.v && (f == t.f)): t.v = true, t.f = 0, f = 0 (l is unconstrained)
 method test_path1() {
