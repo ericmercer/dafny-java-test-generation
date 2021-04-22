@@ -8,6 +8,7 @@
 \usepackage{graphics}
 \usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
 \usepackage{comment}
+\usepackage{url}
 
 \definecolor{dkgreen}{rgb}{0,0.6,0}
 \definecolor{mauve}{rgb}{0.58,0,0.82}
@@ -28,7 +29,6 @@
   tabsize=2,
   morekeywords={function, method, then, reads, modifies, requires, ensures, var, assume, assert}
 }
-
 
 \newcommand{\figref}[1]{Fig.~\ref{#1}}
 
@@ -66,11 +66,11 @@
 \section*{Introduction}
 \emph{Contract programming} prescribes that designers write a precise interface specification for software components that can be used to reason about implementations. A \emph{contract} is a declarative specification of what the software component computes and under what conditions that computation is correct. It defines required \emph{pre-conditions} for a component's state and input at invocation, and it defines the guaranteed \emph{post-conditions} of the component's state and outputs after invocation. Contract programming reduces defects and increases reliability by giving pause to the designer to think critically about, and state formally, the intent of each software component in context of the system and by providing early in the design process a robust foundation for automated reasoning. 
 
-\emph{Dafny} is an expressive programming language for the static verification of programs. It is a sequential imperative object-oriented language with support for generics, inductive data-types, co-inductive data-types, and most importantly, constructs for formal specification. These constructs include contracts, \emph{frames} to define read and write sets, loop-invariants, and \emph{decreases} clauses for termination. The Dafny verifier implements a deductive \emph{weakest pre-condition} calculus to statically prove a Dafny program terminates and adheres to its specification. The Dafny compiler renders to \texttt{C\#} which can then be compiled to .NET. Noteworthy is that there is no guarantee that the meaning of the original Dafny program is preserved through compilation. As such, deploying such a program in a high assurance application merits some further assurance that the program still conforms to its Dafny specification.  
+\emph{Dafny} is an expressive programming language for the static verification of programs. It is a sequential imperative object-oriented language with support for generics, inductive data-types, co-inductive data-types, and most importantly, constructs for formal specification. These constructs include contracts, \emph{frames} to define read and write sets, loop-invariants, and \emph{decreases} clauses for termination. The Dafny verifier implements a deductive \emph{weakest pre-condition} calculus to statically prove a Dafny program terminates and adheres to its specification.  
+
+The Dafny compiler targets a handful of backend languages, including \texttt{Java}, to implement a verified Dafny program. The compiler outputs source level code which can then be compiled to the intended framework. There is no guarantee that the meaning of the original Dafny program is preserved through compilation, and in general, the compiler does not produce readable, efficient, and idiomatic code. Such a final program is not suitable for deployment in any high assurance application. AWS is working on a specialized compiler from Dafny to \texttt{Java} for high assurance applications so that Dafny can be used as a modeling language for web-services.  The subject of this proposal is how to provide some further affirmation that the resulting compiled \texttt{Java} program still conforms to its original Dafny specification. 
 
 Proving that compilation exactly preserves the meaning of the original Dafny program, while an interesting super hard problem, is unlikely to be feasible in the near term (see CakeML or CompCert as examples \cite{cakeml, compcert}). An acceptable alternative is to test to some predefined standard suitable for high assurance systems. This proposal is to automatically generate tests from a Dafny program sufficient to give \emph{object branch coverage} and \emph{specification coverage}. object branch coverage is a common \emph{white-box} criteria that means that at the compiled object code level, every branch outcome is exercised by at least one test to account for short-circuiting of Boolean operations (note that it is possible to further strengthen the test suite to meet \emph{Modified Condition/Decision Coverage} if desired \cite{7194601}). It is stronger than \emph{statement coverage} and \emph{branch coverage}, so a test suite that meets object branch coverage also meets those standards. Specification coverage is a \emph{black-box} criteria based on \emph{input partitioning} where there is a negative test for each pre-condition and a positive test for each post-condition in the specification (note that it may be possible to further strengthen this to \emph{boundary value analysis} if desired). These two coverage criteria provide some assurance that the compiled Dafny program implements its specification.
-
-As an aside, there is nothing particular in the Dafny language relative to \texttt{C\#} beyond it being developed by Microsoft Research. Indeed, the language is as suited to compilation to \texttt{Java} as it is to \texttt{C\#}. If a \texttt{Java} backend existed for the Dafny compiler, then Dafny is equally useful for generating \texttt{Java} as it is for \texttt{C\#}. There is current work in Amazon to create such a compiler. As such, this proposal targets \texttt{Java} tests.
 
 It's worth nothing that the value of Dafny's static verification is only as good the specification. It is easy to write weak contracts that say little about intent and are trivial to prove. It is also not hard to write strong contracts that are as complex as the actual code and hard to prove. Experience with engineers in Collins Aerospace and with undergraduates learning Dafny shows that it is not uncommon to leave out critical details that should be in a contract, believe a contract is saying something that it is not, or simply not realize a contract is vacuously true by virtue of how implications are used. Testing and debugging contracts is an interesting and hard problem. 
 
@@ -281,7 +281,7 @@ Symbolic execution must track side-effecting calls and introduce new uninterpret
 Not discussed thus far are quantifiers in the specification. These may require more advanced theories in the SMT solver if they appear in the path constraint because of a pre-condition, or they can be flattened. Quantifiers in the post-condition are flattened or translated into appropriate looping structures. Also, not discussed yet are looping structures, inductive types, and recursion. Loops in Dafny include loop invariants and decreases clauses for termination. These specifications should be sufficient for symbolic execution.  Inductive types, recursion, and other advanced Dafny features (lemmas, ghosting, etc.) are not considered in this proposal. 
 
 \section*{Expected Results}
-Please include milestones with timeline estimates, such as for datasets, code releases, technical reports, publications, applications, presentations, etc. 
+
 
 \section*{Funds Needed}
 
