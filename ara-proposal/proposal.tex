@@ -66,17 +66,17 @@
 
 \emph{Dafny} is an expressive programming language for the static verification of programs. It is a sequential imperative object-oriented language with support for generics, inductive data-types, co-inductive data-types, and most importantly, constructs for formal specification. These constructs include contracts, \emph{frames} to define read and write sets, loop-invariants, and ranking functions in the form of \emph{decreases} clauses for termination. The Dafny verifier implements a deductive \emph{weakest pre-condition} calculus to statically prove a Dafny program terminates and adheres to its specification.  
 
-The Dafny compiler targets a handful of backend languages, including \texttt{Java}, to implement a verified Dafny program. The compiler outputs source level code which can then be compiled to the intended framework. There is no guarantee that the meaning of the original Dafny program is preserved through compilation, and in general, the compiler does not produce readable, efficient, or idiomatic code. Such a final program is not suitable for deployment in any high assurance system. AWS is working on a specialized compiler from Dafny to \texttt{Java} for such systems so that Dafny can be used as a modeling language for web-services.  The subject of this proposal is how to provide some further affirmation that the resulting compiled \texttt{Java} program still conforms to its original Dafny specification. 
+The Dafny compiler targets a handful of backend languages, including \texttt{Java}, to implement a verified Dafny program. The compiler outputs source level code which can then be compiled to the intended framework. There is no guarantee that the meaning of the original Dafny model is preserved through compilation, and in general, the compiler does not produce readable, efficient, or idiomatic code. Such a final program is not suitable for deployment in any high assurance system. AWS is working on a specialized compiler from Dafny to \texttt{Java} for such systems so that Dafny can be used as a modeling language for web-services.  The subject of this proposal is how to provide some further affirmation that the resulting compiled \texttt{Java} program still conforms to its original Dafny specification. 
 
-Proving that compilation exactly preserves the meaning of the original Dafny program, while an interesting and hard problem, is unlikely to be feasible in the near term (see CakeML or CompCert as examples \cite{cakeml, compcert}). An acceptable alternative is to test to some predefined standard suitable for high assurance systems. This proposal is to automatically generate tests from a Dafny program sufficient to give \emph{object branch coverage} and \emph{specification coverage}. Object branch coverage is a common \emph{white-box} criteria that means that the outcome of every branch, including outcomes from branches added by the short-circuit logic evaluation, is exercised by at least one test. Specification coverage is a \emph{black-box} criteria based on \emph{input partitioning} where there is a negative test for each pre-condition and a positive test for each post-condition in the specification. These two coverage criteria provide some assurance that the compiled Dafny program in \texttt{Java} still implements its specification. \footnote{\emph{MC/DC} and \emph{boundary value analysis} are also possible \cite{7194601}.}
+Proving that compilation exactly preserves the meaning of the original Dafny model, while an interesting and hard problem, is unlikely to be feasible in the near term \cite{cakeml, compcert}. An acceptable alternative is to test to some predefined standard suitable for high assurance systems. This proposal is to automatically generate tests from a Dafny program sufficient to give \emph{object branch coverage} and \emph{specification coverage}. Object branch coverage is a common \emph{white-box} criteria that means that the outcome of every branch, including outcomes from branches added by the short-circuit logic evaluation, is exercised by at least one test. Specification coverage is a \emph{black-box} criteria based on \emph{input partitioning} where there is a negative test for each pre-condition and a positive test for each post-condition in the specification. The two coverage criteria provide some assurance that the compiled \texttt{Java} program from Dafny still implements its specification. \footnote{\emph{MC/DC} and \emph{boundary value analysis} are also possible \cite{7194601}.}
 
-It's worth noting that the value of Dafny's static verification is only as good the specification. It is easy to write weak contracts that say little about intent and are trivial to prove. It is also not hard to write strong contracts that are as complex as the actual code and hard to prove. Experience with engineers at Collins Aerospace and with undergraduates learning Dafny shows that it is not uncommon to leave out critical details that should be in a contract, believe a contract is saying something that it is not, or simply not realize a contract is vacuously true by virtue of how implications are used. Testing and debugging contracts is an interesting and hard problem. 
+It is worth noting that the value of Dafny's static verification is only as good the specification. It is easy to write weak contracts that say little about intent and are trivial to prove. It is also not hard to write strong contracts that are as complex as the actual code and hard to prove. Experience with engineers at Collins Aerospace and with undergraduates at Brigham Young University shows that it is not uncommon to leave out critical details that should be in a contract, believe a contract is saying something that it is not, or simply not realize a contract is vacuously true by virtue of how implications are used. Testing and debugging contracts is an interesting and hard problem. 
 
-A step toward testing contracts is to convert manually written \texttt{Java} tests to Dafny tests. Suppose there is an existing \texttt{Java} implementation of some service that is used as the basis for a Dafny model. The designer writes the specification for the Dafny model to statically prove each software component based on its \texttt{Java} counterpart. How does this designer know if the specification is strong enough to be useful? One answer is that the specification should be at least strong enough to discern negative and positive tests from the original \texttt{Java} implementation. If it is too weak to discern such tests, then it can be strengthened as needed. In this way, a designer is able to leverage the original \texttt{Java} tests to write the specification for the Dafny model (see \cite{repo} for example).
+A step toward testing contracts is to convert manually written \texttt{Java} tests to Dafny tests. Suppose there is an existing \texttt{Java} implementation of some service that is used as the basis for a Dafny model. The designer writes the specification for the Dafny model to statically prove each software component based on its \texttt{Java} counterpart. How does this designer know if the specification is strong enough to be useful? One answer is that the specification should be at least strong enough to discern negative and positive tests from the original \texttt{Java} implementation. If it is too weak to discern such tests, then it can be strengthened as needed. In this way, a designer is able to leverage the original \texttt{Java} tests in the Dafny model (see \cite{repo} for example).
  
 \subsection*{Related Work}
 
-Contracts can be higher-order or first-order depending on the language. Contracts are often used as programming annotations to improve readability of the code and enhance maintainability (e.g. Racket \cite{10.1145/3022670.2951930,10.1145/583852.581484,10.1145/2034574.2034800}). Contracts form the basis of runtime monitors to check pre-conditions and assert post-conditions \cite{10.1007/978-3-642-28869-2_11}. Monitors can be removed by proving an implementation adheres to its contract. Such proofs can be accomplished with static verification \cite{10.1145/3158139}, model checking \cite{10.1007/978-3-642-23702-7_26,10.1007/978-3-319-96142-2_3, 10.1007/978-3-642-28891-3_13, 10.1007/3-540-48249-0_34, 10.1007/978-3-319-41540-6_29}, or deductive reasoning \cite{10.1007/3-540-45314-8_21, Huisman2016, 10.1007/978-3-642-27705-4_7, DBLP:series/lncs/10001, 10.1007/978-3-030-03421-4_4}. Counter-examples make good tests \cite{Billeter:Thesis:2008}. Contracts are equally useful for automated testing \cite{10.1007/978-3-540-69507-3_9, Ciupa05automatictesting, 8471992, 8972014}. A post-condition is a test oracle. The pre-condition is an input constraint for property based or fuzz testing. Mutation analysis on contracts generate useful tests to relate tho contract to the code \cite{KRENN200971}. There are two well known fully verified compiler frameworks: CakeML \cite{10.1145/1631687.1596566,ESOP18} and CompCert \cite{Leroy-backend,2008-Leroy-Blazy-memory-model}. Neither is suitable for a \texttt{Java}.
+Contracts can be higher-order or first-order depending on the language. Contracts are often used as programming annotations to improve readability of the code and enhance maintainability (e.g. \cite{10.1145/3022670.2951930,10.1145/583852.581484,10.1145/2034574.2034800}). Contracts form the basis of runtime monitors to check pre-conditions and assert post-conditions \cite{10.1007/978-3-642-28869-2_11}. Monitors can be removed by proving an implementation adheres to its contract. Such proofs can be accomplished with static verification \cite{10.1145/3158139}, model checking \cite{10.1007/978-3-642-23702-7_26,10.1007/978-3-319-96142-2_3, 10.1007/978-3-642-28891-3_13, 10.1007/3-540-48249-0_34, 10.1007/978-3-319-41540-6_29}, or deductive reasoning \cite{10.1007/3-540-45314-8_21, Huisman2016, 10.1007/978-3-642-27705-4_7, DBLP:series/lncs/10001, 10.1007/978-3-030-03421-4_4}. Counter-examples from such proofs make good tests \cite{Billeter:Thesis:2008}. Contracts are equally useful for automated testing \cite{10.1007/978-3-540-69507-3_9, Ciupa05automatictesting, 8471992, 8972014}. A post-condition is a test oracle. The pre-condition is an input constraint for property based or fuzz testing. Mutation analysis on contracts generates useful tests to relate the contract to the code \cite{KRENN200971}. There are two well known fully verified compiler frameworks: CakeML \cite{10.1145/1631687.1596566,ESOP18} and CompCert \cite{Leroy-backend,2008-Leroy-Blazy-memory-model}. Neither is suitable for a \texttt{Java}.
 
 \section*{Methods}
 
@@ -84,7 +84,8 @@ Contracts can be higher-order or first-order depending on the language. Contract
 \begin{lrbox}{\boxT}
 \begin{lstlisting}
 class T {
-  var f : int; var l : int;  var v : bool;
+  var f : int; var l : int;  
+  var v : bool;
 
   function method isF(f : int) : bool
   reads `f, `v { 
@@ -109,14 +110,15 @@ class T {
 \begin{lrbox}{\boxI}
 \begin{lstlisting}
 class I {
-  var a : bool; var s : bool; var l : int;
+  var a : bool; var s : bool; 
+  var l : int;
 
   method o(t : T, f : int)
   requires !a && !s
-  ensures s == (old(t.isF(f)) && l >= t.getL())
+  ensures 
+    s == (old(t.isF(f)) && l >= t.getL())
   ensures !(old(t.isF(f)) && l >= t.getL()) 
-          ==> 
-          (a == t.isF(f))
+    ==> (a == t.isF(f))
   modifies t, `a, `s {
     if (t.isF(f) && l >= t.getL()) {
       s := true;
@@ -175,6 +177,8 @@ Automatic test generation in this work is accomplished with either the Dafny ver
 
 Consider the Dafny program in \figref{fig:dafny}(a). The program consists of a token class, \texttt{T}, and an ID station class, \texttt{I}. The token stores a fingerprint (\texttt{f}), an access clearance level (\texttt{l}), and a bit indicating if the token is valid (\texttt{v}). \emph{Function-methods} are read only with the frame making clear what is read. These check a match between a passed in fingerprint to the stored fingerprint (\texttt{T.isF(f:int)}) and return the clearance level (\texttt{T.getL()}). The last method (\texttt{T.setV(f:int)}) side-effects as indicated by the modifies clause. It invalidates the token on a mismatched finger print.
 
+The ID station class stores the alarm state (\texttt{a}), the state of a door, (\texttt{s}), and the maximum allowed clearance level to access the door (\texttt{l}). The method, \texttt{o(t : T, f : int)}, in the class arbitrates access to the door by checking a scanned fingerprint against the stored fingerprint in the token. The specification declares the behavior of the door and alarm. The pre-conditions (\texttt{requires}) require the alarm to be off and the door closed. The post-conditions (\texttt{ensures}) merit some discussion. The first ensures says the door only opens when the fingerprint matches the token and the token is within the clearance level. The second ensures is more subtle but intuitively the alarm sounds if the fingerprint does not match the token. Dafny is able to prove the code implements the specification with deductive reasoning.
+
 \begin{figure}
   \begin{center}
     \setlength{\tabcolsep}{10pt}
@@ -187,19 +191,17 @@ Consider the Dafny program in \figref{fig:dafny}(a). The program consists of a t
 \label{fig:paths}
 \end{figure}
 
-The ID station class stores the alarm state (\texttt{a}), the state of a door, (\texttt{s}), and the minimum required clearance level needed to access the door (\texttt{l}). The one method, \texttt{o(t : T, f : int)}, in the class arbitrates access to the door by checking a scanned fingerprint against the stored fingerprint in the token. The specification declares the behavior of the door and alarm. The pre-conditions (\texttt{requires}) require the alarm to be off and the door closed. The post-conditions (\texttt{ensures}) merit some discussion. The first ensures says the door only opens when the fingerprint matches the token and the token is within the clearance level. The second ensures is more subtle but intuitively the alarm sounds if the fingerprint does not match the token. Dafny is able to prove the code implements the specification with deductive reasoning.
-
-The goal is to generate tests for object branch coverage of \texttt{I.o(t : T, f : int)} with symbolic execution. Symbolic execution enumerates all the control flow paths in the method, and for each path, it generates a \emph{path constraint} over the object state and primary inputs that must be satisfied to activate the path. Each path constraint is dispatched to a backend SMT solver to find the initial state values and primary inputs, if any, needed to activate the path. Paths are enumerated until there is a sufficient set to satisfy the coverage criteria.
+The goal of this proposal is to generate tests for object branch coverage of \texttt{I.o(t : T, f : int)} with symbolic execution. Symbolic execution enumerates all the control flow paths in the method, and for each path, it generates a \emph{path constraint} over the object state and primary inputs that must be satisfied to activate the path. Each path constraint is dispatched to a backend SMT solver to find the initial state values and primary inputs, if any, needed to activate the path. Paths are enumerated until there is a sufficient set to satisfy the coverage criteria.
 
 There are three paths needed for object branch coverage for \texttt{I.o(t : T, f : int)}. For simplicity, these are shown as \emph{straight line programs} in \figref{fig:paths}. A straight line program has no branching and uses the \emph{assume} keyword to assert constraints that must hold for program execution to continue. 
 
 Dafny specifications provide important information for simplifying symbolic execution:
 \begin{compactitem}
-  \item Pre and post conditions are summaries that can be used at call sites.
-  \item Frames convey dependencies when call-sites need to be expanded with summaries and why.
+  \item Pre and post conditions are summaries that can be used to replace call sites.
+  \item Frames specify dependencies useful for determining when call-sites need to be replaced.
   \item Loop invariants and ranking functions in decrease clauses guarantee termination.
 \end{compactitem}
-Such detailed specifications address the major hurdles to symbolic execution.
+Such required specifications in Dafny address the major hurdles to symbolic execution.
 
 The straight line program in \figref{fig:paths}(a) is illustrative. Symbolic execution initializes the program state and input with \emph{uninterpreted functions} (i.e., unconstrained variables that are able to assume any value) and executes the program to track the state and variable definition changes in terms of the uninterpreted functions. At the same time, it propagates the path constraint to capture the conditions that must be met by the state and variables to continue along the straight line program.
 
@@ -207,24 +209,26 @@ Symbolic execution begins by initializing a symbol table for variables in the cu
 
 Symbolic execution proceeds by building up the path constraint as it encounters the assume statements. The new path constraint after the assume statements needs to express the object state that must exist before the assignment to field \texttt{s}: $\neg s_0\ \wedge\ \neg a_0\ \wedge \mathit{t.isF}_0 \wedge (l\ \ge\ \mathit{t.getL}_0)$. Symbolic execution then applies to the symbol table the assignment to \texttt{s} changing its entry to be the value \texttt{true}. That value would be used for \texttt{s} if the program continued.
 
-The path constraint is passed to the backend SMT solver to generate inputs for the test: $a_0 = \mathrm{false}$, $s_0 = \mathrm{false}$, $\mathit{l} = 0$, $\mathit{t.isF}_0 = \mathrm{false}$, and $\mathit{t.getL}_0 = 0$. The generated JUnit test uses a \emph{mock} object for an instance of \texttt{T} for the test and directs the mock to return true whenever \texttt{T.isF(f)} is invoked and zero for whenever \texttt{T.getL()} is invoked.\footnote{Mockito is to be used for mocks.} 
+The path constraint is passed to the backend SMT solver to generate inputs for the test: $a_0 = \mathrm{false}$, $s_0 = \mathrm{false}$, $\mathit{l} = 0$, $\mathit{t.isF}_0 = \mathrm{true}$, and $\mathit{t.getL}_0 = 0$. The generated \texttt{JUnit} test uses a \emph{mock} object for an instance of \texttt{T} for the test and directs the mock to return true whenever \texttt{T.isF(f)} is invoked and zero for whenever \texttt{T.getL()} is invoked.\footnote{Mockito is to be used for mocks.} 
 
-The post-conditions define the oracle for the test. What is interesting in this test is that the ensures statement in the specification makes reference to the \emph{old} value of \texttt{t.isF(f)}. The old value is the value before the method call. The test must capture the value in a local variable before the call to the method under test in order to use that old value in the assertion. Dafny disallows any side-effecting calls in the specification so it is never the case that capturing the old value changes the object state. \figref{fig:test}(a) is the final test expressed as a Dafny program. The assume statements fill the role of mocks. Although a simple example, it illustrates the utility of the frame in the Dafny specification to simplify the path constraint by abstracting out needless details through dependency analysis. This test program can then be used to generate a \emph{JUnit} test for the \texttt{Java} implementation.
+The post-conditions define the oracle for the test. What is interesting in this test is that the ensures statement in the specification makes reference to the \emph{old} value of \texttt{t.isF(f)}. The old value is the value before the method call. The test must capture the value in a local variable before the call to the method under test in order to use that old value in the assertion. Dafny disallows any side-effecting calls in the specification so it is never the case that capturing the old value changes the object state. \figref{fig:test}(a) is the final test expressed as a Dafny program. The assume statements fill the role of mocks. Although a simple example, it illustrates the utility of the frame in the Dafny specification to simplify the path constraint by abstracting out needless details through dependency analysis. This test program can be used to generate a \texttt{JUnit} test for the \texttt{Java} implementation.
 
 \newsavebox{\boxd}
 \begin{lrbox}{\boxd}
 \begin{lstlisting}
 method test_path0() {
   var i: I := new I; 
-  i.a := false; i.s := false; i.l := 0;
+  i.a := false; i.s := false; 
+  i.l := 0;
   var t: T := new T; 
+  
   var f: int;
-  assume (t.isF(f)); assume (t.getL() == 0);
+  assume (t.isF(f)); 
+  assume (t.getL() == 0);
   var old_isF := t.isF(f);
-  
   i.o(t, f);
-  
-  assert(i.s == (old_isF && i.l >= t.getL()));
+  assert (i.s == 
+    (old_isF && i.l >= t.getL()));
   assert(!(old_isF && i.l >= t.getL()) 
            ==> (i.a == t.isF(f)));
 }
@@ -236,15 +240,17 @@ method test_path0() {
 \begin{lstlisting}
 method test_path1() {
   var i: I := new I; 
-  i.a := false; i.s := false; i.l := 0;
-  var t: T := new T; t.v := true; t.f := 0;
+  i.a := false; i.s := false; 
+  i.l := 0;
+  var t: T := new T; t.v := true; 
+  t.f := 0;
   var f: int := 0;
-  assert (t.isF(f)); assume (t.getL() == 0);
+  assert (t.isF(f)); 
+  assume (t.getL() == 0);
   var old_isF := t.isF(f);
-
   i.o(t, f);
-  
-  assert(i.s == (old_isF && i.l >= t.getL()));
+  assert(i.s == 
+    (old_isF && i.l >= t.getL()));
   assert(!(old_isF && i.l >= t.getL()) 
            ==> (i.a == t.isF(f)));
 }
@@ -263,15 +269,15 @@ method test_path1() {
 \label{fig:test}
 \end{figure}
 
-Consider the slightly more complex path in \figref{fig:paths}(b). Here the dependency analysis identifies the relation between \texttt{t.setV(f)} and \texttt{t.isF(f)} with the former modifying a field that the latter reads. As before, \texttt{t.getL()} is independent. This proposal takes inspiration from SMT solvers by first solving the constraint problem with uninterpreted functions, and then, with dependency analysis, solve any secondary constraint problems. As such, the path constraint at the end of the method is $\neg s_0\ \wedge\ \neg a_0\ \wedge \mathit{t.isF}_0 \wedge \neg(l\ \ge\ \mathit{t.getL}_0)$ with a satisfying assignment of $a_0 = \mathrm{false}$, $s_0 = \mathrm{false}$, $\mathit{l} = 0$, $\mathit{t.isF}_0 = \mathrm{false}$, and $\mathit{t.getL}_0 = 1$. The secondary constraint is solved using the specification for \texttt{t.setV(f)}: $t.v_0 \wedge (f_0 == t.f_0)$. These assignments are $t.v_0 = 0$, $t.f_0 = 0$, and $f_0 = 0$ for the final test in \figref{fig:test}(b). The test asserts rather than assumes the call to \texttt{t.isF(f)} has the correct value.
+Consider the slightly more complex path in \figref{fig:paths}(b). Here the dependency analysis identifies the relation between \texttt{t.setV(f)} and \texttt{t.isF(f)} with the former modifying a field that the latter reads. As before, \texttt{t.getL()} is independent. This proposal takes inspiration from SMT solvers by first solving the constraint problem with uninterpreted functions, and then, with dependency analysis, solve any secondary constraint problems. As such, the path constraint at the end of the method is $\neg s_0\ \wedge\ \neg a_0\ \wedge \mathit{t.isF}_0 \wedge \neg(l\ \ge\ \mathit{t.getL}_0)$ with a satisfying assignment of $a_0 = \mathrm{false}$, $s_0 = \mathrm{false}$, $\mathit{l} = 0$, $\mathit{t.isF}_0 = \mathrm{true}$, and $\mathit{t.getL}_0 = 1$. The secondary constraint is solved using the specification for \texttt{t.setV(f)}: $t.v_0 \wedge (f_0 == t.f_0)$. These assignments are $t.v_0 = 0$, $t.f_0 = 0$, and $f_0 = 0$ for the final test in \figref{fig:test}(b). The test asserts rather than assumes the call to \texttt{t.isF(f)} has the correct value.
 
 \begin{comment}
 Symbolic execution must track side-effecting calls and introduce new uninterpreted functions as appropriate. For example, a second call to \texttt{T.isF(f : int)} should create a new uninterpreted function since its value might be different from the first call, and such information should be captured in the symbol table and path constraint as appropriate. Also note that it is possible to skip the secondary constraint problem with the flattened contracts to rather over-approximate actual program behavior using mocks. The mocks can be configured to return the needed sequence of program values to test the path. Depending on the code being tested, such an over-approximation may be sufficient for the test though there are two things to consider: first, what if such a path is not feasible in any real execution (i.e., there does not exist any input that would exercise that path); and second, what does a passing or failing test mean? Here it is not clear if such an over-approximation is sound and the question merits further investigation.
 \end{comment}
 
-Not discussed thus far are quantifiers in the specification. These may require more advanced theories in the SMT solver if they appear in the path constraint because of a pre-condition, or they can be flattened. Quantifiers in the post-condition are flattened or translated into appropriate looping structures. Also, not discussed yet are looping structures, inductive types, and recursion. Loops in Dafny include loop invariants and decreases clauses for termination. These specifications should be sufficient for symbolic execution.  Inductive types, recursion, and other advanced Dafny features (lemmas, ghosting, etc.) are not considered in this proposal. 
+Not discussed thus far are quantifiers in the specification. These may require more advanced theories in the SMT solver if they appear in the path constraint because of a pre-condition, or they can be flattened. Quantifiers in the post-condition are flattened or translated into appropriate looping structures. Also, not discussed yet are looping structures, inductive types, and recursion. Loops in Dafny include loop invariants and decreases clauses for termination. These specifications should be sufficient for symbolic execution.  Inductive types, recursion, and other advanced Dafny features are not considered in this proposal. 
 
-Specification coverage is an analysis of the pre-conditions and post-conditions. It first generates negative tests to violate each of the pre-conditions. In the running example, it would generate tests where \texttt{a} is set and \texttt{s} is not and visa versa. It then checks the current test suite to see if a tests exists to exercise each way that a post-condition could be satisfied. In the example, at least two tests must exist to exercise each side of the implication defining the behavior of \texttt{a}. Symbolic execution is used to search for paths, if any, that exercise uncovered conditions by including the condition in final path constraint passed to the backend solver.
+Specification coverage first generates negative tests to violate each of the pre-conditions using the backend solver. In the running example, it would generate tests where \texttt{a} is set and \texttt{s} is not and visa versa. It then checks the current test suite to see if tests exists to exercise each way that a post-condition could be satisfied. In the example, at least two tests must exist to exercise each side of the implication defining the behavior of \texttt{a} but tests are also required for each value allowed by the equivalence checks (e.g. \texttt{==} in the ensures). Symbolic execution is used to search for paths, if any, that exercise uncovered conditions by including the condition in final path constraint passed to the backend solver. In the running example, the eventual test from the path in \figref{fig:paths}(c) covers the missing value of the equivalence check for \texttt{a}. 
 
 \section*{Expected Results}
 A tool that generates a \texttt{JUnit} test-suite for object branch and specification coverage from a verified Dafny program is the expected outcome with appropriate publications. The first quarter is to generate tests from straight line programs tackling the dependency analysis and symbolic execution. The second quarter addresses loops, and the use of loop-invariants, in the test generation. The third quarter implements path enumeration and specification coverage. The fourth quarter targets case studies and publications.
