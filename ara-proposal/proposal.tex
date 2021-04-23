@@ -9,12 +9,14 @@
 \usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
 \usepackage{comment}
 \usepackage{url}
+\usepackage{times}
 
 \definecolor{dkgreen}{rgb}{0,0.6,0}
 \definecolor{mauve}{rgb}{0.58,0,0.82}
 \definecolor{light-gray}{gray}{0.88}
 
 \lstset{frame=none,
+  basicstyle=\ttfamily,
   language=Java,
   aboveskip=3mm,
   belowskip=3mm,
@@ -66,21 +68,15 @@
 
 The Dafny compiler targets a handful of backend languages, including \texttt{Java}, to implement a verified Dafny program. The compiler outputs source level code which can then be compiled to the intended framework. There is no guarantee that the meaning of the original Dafny program is preserved through compilation, and in general, the compiler does not produce readable, efficient, or idiomatic code. Such a final program is not suitable for deployment in any high assurance system. AWS is working on a specialized compiler from Dafny to \texttt{Java} for such systems so that Dafny can be used as a modeling language for web-services.  The subject of this proposal is how to provide some further affirmation that the resulting compiled \texttt{Java} program still conforms to its original Dafny specification. 
 
-Proving that compilation exactly preserves the meaning of the original Dafny program, while an interesting and hard problem, is unlikely to be feasible in the near term (see CakeML or CompCert as examples \cite{cakeml, compcert}). An acceptable alternative is to test to some predefined standard suitable for high assurance systems. This proposal is to automatically generate tests from a Dafny program sufficient to give \emph{object branch coverage} and \emph{specification coverage}. Object branch coverage is a common \emph{white-box} criteria that means that at the compiled object code level, every branch outcome is exercised by at least one test to account for short-circuiting of Boolean operations (note that it is possible to further strengthen the test suite to meet \emph{Modified Condition/Decision Coverage} if desired \cite{7194601}). It is stronger than \emph{statement coverage} and \emph{branch coverage}, so a test suite that meets object branch coverage also meets those standards. Specification coverage is a \emph{black-box} criteria based on \emph{input partitioning} where there is a negative test for each pre-condition and a positive test for each post-condition in the specification (note that it may be possible to further strengthen this to \emph{boundary value analysis} if desired). These two coverage criteria provide some assurance that the compiled Dafny program in \texttt{Java} still implements its specification.
+Proving that compilation exactly preserves the meaning of the original Dafny program, while an interesting and hard problem, is unlikely to be feasible in the near term (see CakeML or CompCert as examples \cite{cakeml, compcert}). An acceptable alternative is to test to some predefined standard suitable for high assurance systems. This proposal is to automatically generate tests from a Dafny program sufficient to give \emph{object branch coverage} and \emph{specification coverage}. Object branch coverage is a common \emph{white-box} criteria that means that the outcome of every branch, including outcomes from branches added by the short-circuit logic evaluation, is exercised by at least one test. Specification coverage is a \emph{black-box} criteria based on \emph{input partitioning} where there is a negative test for each pre-condition and a positive test for each post-condition in the specification. These two coverage criteria provide some assurance that the compiled Dafny program in \texttt{Java} still implements its specification. \footnote{\emph{MC/DC} and \emph{boundary value analysis} are also possible \cite{7194601}.}
 
-It's worth nothing that the value of Dafny's static verification is only as good the specification. It is easy to write weak contracts that say little about intent and are trivial to prove. It is also not hard to write strong contracts that are as complex as the actual code and hard to prove. Experience with engineers in Collins Aerospace and with undergraduates learning Dafny shows that it is not uncommon to leave out critical details that should be in a contract, believe a contract is saying something that it is not, or simply not realize a contract is vacuously true by virtue of how implications are used. Testing and debugging contracts is an interesting and hard problem. 
+It's worth noting that the value of Dafny's static verification is only as good the specification. It is easy to write weak contracts that say little about intent and are trivial to prove. It is also not hard to write strong contracts that are as complex as the actual code and hard to prove. Experience with engineers at Collins Aerospace and with undergraduates learning Dafny shows that it is not uncommon to leave out critical details that should be in a contract, believe a contract is saying something that it is not, or simply not realize a contract is vacuously true by virtue of how implications are used. Testing and debugging contracts is an interesting and hard problem. 
 
 A step toward testing contracts is to convert manually written \texttt{Java} tests to Dafny tests. Suppose there is an existing \texttt{Java} implementation of some service that is used as the basis for a Dafny model. The designer writes the specification for the Dafny model to statically prove each software component based on its \texttt{Java} counterpart. How does this designer know if the specification is strong enough to be useful? One answer is that the specification should be at least strong enough to discern negative and positive tests from the original \texttt{Java} implementation. If it is too weak to discern such tests, then it can be strengthened as needed. In this way, a designer is able to leverage the original \texttt{Java} tests to write the specification for the Dafny model (see \cite{repo} for example).
  
 \subsection*{Related Work}
 
-Many different tools and languages integrate contract programming in different ways (e.g., Python, Typescript, Java, C/C++, Rust, Eiffel, Go, AGREE, etc.). Contracts can be higher-order or first-order depending on the language. Contracts are often used as programming annotations to improve readability of the code and enhance maintainability (e.g. Racket \cite{10.1145/3022670.2951930,10.1145/583852.581484,10.1145/2034574.2034800}). This role is especially valuable in untyped script languages where making sense of expected types can be challenging if not the original author (e.g. Python, Javascript, Typescript, Perl). 
-
-Contracts form the basis of runtime monitors to check pre-conditions and assert post-conditions \cite{10.1007/978-3-642-28869-2_11}. Monitors can be removed by proving an implementation adheres to its contract. Such proofs can be accomplished with static program analysis (abstract interpretation or type systems) \cite{10.1145/3158139}, model checking (k-induction in Lustre/AGREE) \cite{10.1007/978-3-642-23702-7_26,10.1007/978-3-319-96142-2_3, 10.1007/978-3-642-28891-3_13, 10.1007/3-540-48249-0_34, 10.1007/978-3-319-41540-6_29}, or deductive reasoning (weakest pre-condition or strongest post-condition calculus) \cite{10.1007/3-540-45314-8_21, Huisman2016, 10.1007/978-3-642-27705-4_7, DBLP:series/lncs/10001, 10.1007/978-3-030-03421-4_4}. Counter-examples from failed proofs often are some of the very best tests (e.g., generating tests from counter-examples) \cite{Billeter:Thesis:2008}.
-
-Contracts are equally useful for automated testing \cite{10.1007/978-3-540-69507-3_9, Ciupa05automatictesting, 8471992, 8972014}. A post-condition is a pre-defined, and convenient, test oracle. The pre-condition is an equally convenient, and useful, input constraint for property based testing and fuzz testing. The contracts can even be employed in mutation analysis to generate tests to show the refinement relation between the contract and the implementing code \cite{KRENN200971}. 
-
-There are few examples of fully verified compilers. A notable example is perhaps in the SeL4 operating system and the CakeML framework \cite{10.1145/1631687.1596566,ESOP18}. There is also the CompCert C compiler that is a high-assurance compiler for embedded systems \cite{Leroy-backend,2008-Leroy-Blazy-memory-model}. Neither of these are suitable for a Java deployment.
+Contracts can be higher-order or first-order depending on the language. Contracts are often used as programming annotations to improve readability of the code and enhance maintainability (e.g. Racket \cite{10.1145/3022670.2951930,10.1145/583852.581484,10.1145/2034574.2034800}). Contracts form the basis of runtime monitors to check pre-conditions and assert post-conditions \cite{10.1007/978-3-642-28869-2_11}. Monitors can be removed by proving an implementation adheres to its contract. Such proofs can be accomplished with static verification \cite{10.1145/3158139}, model checking \cite{10.1007/978-3-642-23702-7_26,10.1007/978-3-319-96142-2_3, 10.1007/978-3-642-28891-3_13, 10.1007/3-540-48249-0_34, 10.1007/978-3-319-41540-6_29}, or deductive reasoning \cite{10.1007/3-540-45314-8_21, Huisman2016, 10.1007/978-3-642-27705-4_7, DBLP:series/lncs/10001, 10.1007/978-3-030-03421-4_4}. Counter-examples make good tests \cite{Billeter:Thesis:2008}. Contracts are equally useful for automated testing \cite{10.1007/978-3-540-69507-3_9, Ciupa05automatictesting, 8471992, 8972014}. A post-condition is a test oracle. The pre-condition is an input constraint for property based or fuzz testing. Mutation analysis on contracts generate useful tests to relate tho contract to the code \cite{KRENN200971}. There are two well known fully verified compiler frameworks: CakeML \cite{10.1145/1631687.1596566,ESOP18} and CompCert \cite{Leroy-backend,2008-Leroy-Blazy-memory-model}. Neither is suitable for a \texttt{Java}.
 
 \section*{Methods}
 
@@ -168,28 +164,28 @@ Automatic test generation in this work is accomplished with either the Dafny ver
 
 \begin{figure}
   \begin{center}
-    \setlength{\tabcolsep}{20pt}
+    % \setlength{\tabcolsep}{10pt}
     \begin{tabular}{cc}
       \scalebox{0.85}{\usebox{\boxT}} & \scalebox{0.85}{\usebox{\boxI}}
     \end{tabular}
   \end{center}
-\caption{An illustrative Dafny model.}
+\caption{An illustrative Dafny model for test generation.}
 \label{fig:dafny}
 \end{figure}
 
+Consider the Dafny program in \figref{fig:dafny}(a). The program consists of a token class, \texttt{T}, and an ID station class, \texttt{I}. The token stores a fingerprint (\texttt{f}), an access clearance level (\texttt{l}), and a bit indicating if the token is valid (\texttt{v}). \emph{Function-methods} are read only with the frame making clear what is read. These check a match between a passed in fingerprint to the stored fingerprint (\texttt{T.isF(f:int)}) and return the clearance level (\texttt{T.getL()}). The last method (\texttt{T.setV(f:int)}) side-effects as indicated by the modifies clause. It invalidates the token on a mismatched finger print.
+
 \begin{figure}
   \begin{center}
-    \setlength{\tabcolsep}{20pt}
+    \setlength{\tabcolsep}{10pt}
     \begin{tabular}[t]{ccc}
       \scalebox{0.85}{\usebox{\boxa}} & \scalebox{0.85}{\usebox{\boxb}} & \scalebox{0.85}{\usebox{\boxc}} \\
       (a) & (b) & (c)
     \end{tabular}
   \end{center}
-\caption{Paths to test for object branch coverage. (a) The true path. (b) The false path on the second condition. (c) The false path on the first condition.}
+\caption{Test paths for object branch coverage. (a) Both conditions true. (b) Second false. (c) First false.}
 \label{fig:paths}
 \end{figure}
-
-Consider the Dafny program in \figref{fig:dafny}(a). The program consists of a token class, \texttt{T}, and an ID station class, \texttt{I}. The token stores a fingerprint (\texttt{f}), an access clearance level (\texttt{l}), and a bit indicating if the token is valid (\texttt{v}). \emph{Function-methods} are read only with the frame making clear what is read. These check a match between a passed in fingerprint to the stored fingerprint (\texttt{T.isF(f:int)}) and return the clearance level (\texttt{T.getL()}). The last method (\texttt{T.setV(f:int)}) side-effects as indicated by the modifies clause. It invalidates the token on a mismatched finger print.
 
 The ID station class stores the alarm state (\texttt{a}), the state of a door, (\texttt{s}), and the minimum required clearance level needed to access the door (\texttt{l}). The one method, \texttt{o(t : T, f : int)}, in the class arbitrates access to the door by checking a scanned fingerprint against the stored fingerprint in the token. The specification declares the behavior of the door and alarm. The pre-conditions (\texttt{requires}) require the alarm to be off and the door closed. The post-conditions (\texttt{ensures}) merit some discussion. The first ensures says the door only opens when the fingerprint matches the token and the token is within the clearance level. The second ensures is more subtle but intuitively the alarm sounds if the fingerprint does not match the token. Dafny is able to prove the code implements the specification with deductive reasoning.
 
@@ -235,7 +231,6 @@ method test_path0() {
 \end{lstlisting}
 \end{lrbox}
 
-
 \newsavebox{\boxe}
 \begin{lrbox}{\boxe}
 \begin{lstlisting}
@@ -276,8 +271,10 @@ Symbolic execution must track side-effecting calls and introduce new uninterpret
 
 Not discussed thus far are quantifiers in the specification. These may require more advanced theories in the SMT solver if they appear in the path constraint because of a pre-condition, or they can be flattened. Quantifiers in the post-condition are flattened or translated into appropriate looping structures. Also, not discussed yet are looping structures, inductive types, and recursion. Loops in Dafny include loop invariants and decreases clauses for termination. These specifications should be sufficient for symbolic execution.  Inductive types, recursion, and other advanced Dafny features (lemmas, ghosting, etc.) are not considered in this proposal. 
 
+Specification coverage is an analysis of the pre-conditions and post-conditions. It first generates negative tests to violate each of the pre-conditions. In the running example, it would generate tests where \texttt{a} is set and \texttt{s} is not and visa versa. It then checks the current test suite to see if a tests exists to exercise each way that a post-condition could be satisfied. In the example, at least two tests must exist to exercise each side of the implication defining the behavior of \texttt{a}. Symbolic execution is used to search for paths, if any, that exercise uncovered conditions by including the condition in final path constraint passed to the backend solver.
+
 \section*{Expected Results}
-A tool that generates a \texttt{JUnit} test-suite for object branch and specification coverage from a verified Dafny program is the expected outcome with appropriate publications. The first quarter is to generate tests from straight line programs tackling the dependency analysis and symbolic execution. The second quarter addresses loops, and the use of loop-invariants, in the test generation. The third quarter implements path enumeration. The fourth quarter targets case studies and publications.
+A tool that generates a \texttt{JUnit} test-suite for object branch and specification coverage from a verified Dafny program is the expected outcome with appropriate publications. The first quarter is to generate tests from straight line programs tackling the dependency analysis and symbolic execution. The second quarter addresses loops, and the use of loop-invariants, in the test generation. The third quarter implements path enumeration and specification coverage. The fourth quarter targets case studies and publications.
 
 \section*{Funds Needed}
 
