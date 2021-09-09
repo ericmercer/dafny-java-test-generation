@@ -1,5 +1,5 @@
 # dafny-java-test-generation
-[Get Daphny from Source](https://github.com/dafny-lang/dafny/wiki/INSTALL#building-and-developing-from-source-code)
+[Get Dafny from Source](https://github.com/dafny-lang/dafny/wiki/INSTALL#building-and-developing-from-source-code)
 * Install .Net 5.0
 *	Install python 3
     * sudo apt install python3 python3-pip
