@@ -28,6 +28,7 @@
         *	cd BASE_DIRECTORY/dafny/Test; lit .
 *	Run Daphny:
     *	BASE_DIRECTORY/dafny/Scripts/dafny <MY-PROGRAM.dfy>
+
 [Generating Tests](https://github.com/Dargones/dafny/tree/PatchesToCounterExamples/Source/DafnyTestGeneration#how-to-generate-tests)
 *	Always use command line argument:
     *	/definiteAssignment:3
