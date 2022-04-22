@@ -107,7 +107,7 @@ method test_path1() {
   t.v := true;
   t.f := 0;
   var f: int := 0;
-  assert (t.isF(f));
+  assume (t.isF(f));
   assume (t.getL() == 0);
   var old_isF := t.isF(f);
   i.o(t, f);

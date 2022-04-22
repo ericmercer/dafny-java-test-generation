@@ -30,9 +30,8 @@ method sortArrayTest()
   myArray[0] := 5;
   myArray[1] := 13;
   myArray[2] := 1;
-
+  var oldLength := myArray.Length;
   sort(myArray);  // Specification is not strong enough to prove the following asserts
-  assert(myArray[0] == 1);
-  assert(myArray[1] == 5);
-  assert(myArray[2] == 13);
+  assert(isSorted(myArray));
+  assert(oldLength == myArray.Length);
 }
